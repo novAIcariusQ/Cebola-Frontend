@@ -27,6 +27,10 @@ export function getDemoMerchantShops() {
   }
 }
 
+export function getDemoMerchantShop(shopId: string) {
+  return getDemoMerchantShops().find(shop => shop.id === shopId) ?? null
+}
+
 export function upsertDemoMerchantShop(shop: Shop) {
   const shops = getDemoMerchantShops()
   const nextShops = shops.some(item => item.id === shop.id)

@@ -66,6 +66,7 @@ export const en = {
         description: 'Route prepared for editable logo, name, description, and navigation to products and orders.',
         products: 'Products',
         orders: 'Orders',
+        notFound: 'Shop was not found',
       },
       productCatalogue: {
         title: 'Product catalogue',

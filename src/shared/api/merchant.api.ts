@@ -22,14 +22,18 @@ export const merchantApi = {
       .get<Shop[] | MerchantListResponse<Shop>>('/merchant/shops', { params })
       .then(response => response.data)
   },
-  getShop() {
+  getShop(shopId?: string) {
+    if (shopId) {
+      return apiClient.get<Shop | null>(`/merchant/shops/${shopId}`).then(response => response.data)
+    }
+
     return apiClient.get<Shop | null>('/merchant/shop').then(response => response.data)
   },
   createShop(payload: ShopFormValues) {
     return apiClient.post<Shop>('/merchant/shop', payload).then(response => response.data)
   },
   updateShop(shopId: string, payload: ShopFormValues) {
-    return apiClient.put<Shop>(`/merchant/shop/${shopId}`, payload).then(response => response.data)
+    return apiClient.put<Shop>(`/merchant/shops/${shopId}`, payload).then(response => response.data)
   },
   getProducts() {
     return apiClient.get<Product[]>('/merchant/products').then(response => response.data)

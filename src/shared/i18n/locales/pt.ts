@@ -66,6 +66,7 @@ export const pt = {
         description: 'Rota preparada para logótipo, nome, descrição editáveis e navegação para produtos e encomendas.',
         products: 'Produtos',
         orders: 'Encomendas',
+        notFound: 'Loja não encontrada',
       },
       productCatalogue: {
         title: 'Catálogo de produtos',
