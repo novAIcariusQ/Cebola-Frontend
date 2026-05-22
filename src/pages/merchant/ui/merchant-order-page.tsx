@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Check, Clock, X } from 'lucide-react'
+import { ArrowLeft, Check, Clock, X } from 'lucide-react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import type { Order, OrderStatus } from '@entities/order'
@@ -79,17 +79,27 @@ export function MerchantOrderPage() {
         <h1 className="text-2xl font-semibold text-ink">{t('merchant.pages.order.notFound')}</h1>
         <button
           type="button"
-          className="mt-4 rounded-md bg-market px-4 py-2 text-sm font-semibold text-white"
+          className="mt-4 inline-flex items-center gap-2 rounded-md bg-market px-4 py-2 text-sm font-semibold text-white"
           onClick={() => navigate(`/merchant/shops/${shopId}/orders`)}
         >
-          {t('merchant.pages.shop.orders')}
+          <ArrowLeft size={16} aria-hidden="true" />
+          {t('common.back')}
         </button>
       </section>
     )
   }
 
   return (
-    <div className="grid gap-6 lg:grid-cols-[1fr_340px]">
+    <div className="space-y-4">
+      <button
+        type="button"
+        className="inline-flex items-center gap-2 text-sm font-semibold text-ink/60 transition hover:text-market"
+        onClick={() => navigate(`/merchant/shops/${shopId}/orders`)}
+      >
+        <ArrowLeft size={16} aria-hidden="true" />
+        {t('common.back')}
+      </button>
+      <div className="grid gap-6 lg:grid-cols-[1fr_340px]">
       <section className="rounded-md border border-ink/10 bg-white p-6 shadow-soft">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
@@ -188,6 +198,7 @@ export function MerchantOrderPage() {
           </dl>
         </section>
       </aside>
+      </div>
     </div>
   )
 }

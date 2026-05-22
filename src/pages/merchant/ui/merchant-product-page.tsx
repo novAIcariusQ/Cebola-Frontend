@@ -1,5 +1,5 @@
 import { type ChangeEvent, type ReactNode, useEffect, useState } from 'react'
-import { ImagePlus, Pencil, Save, Trash2, X } from 'lucide-react'
+import { ArrowLeft, ImagePlus, Pencil, Save, Trash2, X } from 'lucide-react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import type { Product, ProductFormValues } from '@entities/product'
@@ -147,17 +147,27 @@ export function MerchantProductPage() {
         <h1 className="text-2xl font-semibold text-ink">{t('merchant.pages.product.notFound')}</h1>
         <button
           type="button"
-          className="mt-4 rounded-md bg-market px-4 py-2 text-sm font-semibold text-white"
+          className="mt-4 inline-flex items-center gap-2 rounded-md bg-market px-4 py-2 text-sm font-semibold text-white"
           onClick={() => navigate(`/merchant/shops/${shopId}/products`)}
         >
-          {t('merchant.pages.shop.products')}
+          <ArrowLeft size={16} aria-hidden="true" />
+          {t('common.back')}
         </button>
       </section>
     )
   }
 
   return (
-    <div className="grid gap-6 lg:grid-cols-[420px_1fr]">
+    <div className="space-y-4">
+      <button
+        type="button"
+        className="inline-flex items-center gap-2 text-sm font-semibold text-ink/60 transition hover:text-market"
+        onClick={() => navigate(`/merchant/shops/${shopId}/products`)}
+      >
+        <ArrowLeft size={16} aria-hidden="true" />
+        {t('common.back')}
+      </button>
+      <div className="grid gap-6 lg:grid-cols-[420px_1fr]">
       <section className="rounded-md border border-ink/10 bg-white p-6 shadow-soft">
         <div className="relative grid min-h-96 place-items-center overflow-hidden rounded-md bg-paper">
           {product.photoUrl ? (
@@ -277,6 +287,7 @@ export function MerchantProductPage() {
           </button>
         </div>
       </section>
+      </div>
     </div>
   )
 }

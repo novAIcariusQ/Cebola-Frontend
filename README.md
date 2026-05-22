@@ -1,6 +1,6 @@
 # Cebola Frontend
 
-React/Vite frontend for the Cebola MVP. The current implementation focuses on the merchant console: shop settings, product management, order visibility, inventory imports, image upload hooks, and i18n.
+React/Vite frontend for the Cebola MVP. The current implementation covers the merchant-facing flow from the project board: auth pages, merchant header, shops landing, shop creation/detail, product catalogue/create/detail, order catalogue/detail, settings, upload hooks, AI describe hooks, and EN/PT localization.
 
 ## Stack
 
@@ -11,13 +11,14 @@ React/Vite frontend for the Cebola MVP. The current implementation focuses on th
 - React Router
 - Axios with `baseURL: /api`
 - i18next + react-i18next
+- lucide-react icons
 
 ## Requirements
 
 - Node.js 20+ recommended
 - npm
 
-The project was checked with Node `24.14.1`.
+The project was last checked with Node `24.14.1`.
 
 ## Install
 
@@ -27,7 +28,7 @@ npm install
 
 If npm optional dependencies break on Windows, clean the install and run it again:
 
-```bash
+```powershell
 Remove-Item -Recurse -Force node_modules, package-lock.json
 npm install
 ```
@@ -41,7 +42,7 @@ npm run dev
 Default local URL:
 
 ```text
-http://127.0.0.1:3000/
+http://localhost:3000
 ```
 
 Vite proxies `/api` to:
@@ -50,7 +51,7 @@ Vite proxies `/api` to:
 http://localhost:3001
 ```
 
-This is configured in `vite.config.ts`.
+The proxy is configured in `vite.config.ts`.
 
 ## Build
 
@@ -58,32 +59,48 @@ This is configured in `vite.config.ts`.
 npm run build
 ```
 
-The command runs TypeScript build checks and then `vite build`.
+This runs TypeScript checks and then `vite build`.
 
-## How To Open The Merchant Console
+## Demo Access
 
-1. Start the dev server with `npm run dev`.
-2. Open `http://127.0.0.1:3000/`.
-3. Use the login form.
-4. If backend auth is not running yet, click `Use local demo access`.
-5. You will be redirected to `/merchant`.
+Backend auth is not required for frontend development. Open `/login/sign-in` and click `Use local demo access`; this stores a local frontend token and redirects to `/merchant/shops`.
 
-The demo access stores a local frontend token only. It exists so the merchant UI can be developed before backend auth is available.
+## Merchant Routes
 
-## Current Features
+```text
+/login/sign-in
+/login/sign-up
 
-- Merchant authentication screen with login/register API calls prepared.
-- Merchant console layout based on the reference console structure.
-- Shop settings form with public visibility toggle.
-- Logo upload prepared for `POST /api/upload`, with local preview fallback.
-- Product list with add, edit, delete, availability, price, photo URL, and photo upload.
-- Orders table with pickup QR/code preview and local status change.
-- Inventory import UI for JSON, XLSX, and image/AI flows.
-- JSON import can create local products immediately for frontend testing.
-- i18n support for Portuguese and English.
-- Language selection persisted in `localStorage`.
+/merchant/shops
+/merchant/shops/new
+/merchant/shops/:shopId
+/merchant/shops/:shopId/products
+/merchant/shops/:shopId/products/new
+/merchant/shops/:shopId/products/:productId
+/merchant/shops/:shopId/orders
+/merchant/shops/:shopId/orders/:orderId
+/merchant/settings
+```
 
-## API Contracts Prepared
+`/merchant` redirects to `/merchant/shops`. Unknown routes redirect to the merchant landing page.
+
+## Implemented Merchant Scope
+
+- Sign in page: switch to sign up, email, password, sign in.
+- Sign up page: switch to sign in, name, email, password, password confirmation, sign up.
+- Merchant header: home button, settings button, language switcher.
+- Merchant landing: shop search, create shop button, shop cards, pagination.
+- Shop creation: logo drop/upload, name, description, create/cancel.
+- Shop page: editable logo, name, description, links to products and orders.
+- Product catalogue: JSON/XLSX import controls, create product, product cards, price, quantity, search, pagination.
+- Product creation: image drop/upload, title, cost, quantity, description, AI describe, create more, create/cancel.
+- Product page: editable image, title, cost, quantity, description, remove product.
+- Order catalogue: order cards with id/code, created date, total quantity, total amount, status, search, pagination.
+- Order page: ordered products, quantities, final price, status actions, customer contact info.
+- Settings page: editable merchant name, change password form, logout.
+- Language switch: Portuguese and English, persisted in `localStorage`.
+
+## API Contracts Used
 
 Auth:
 
@@ -91,19 +108,35 @@ Auth:
 POST /api/auth/login
 POST /api/auth/register
 GET  /api/auth/me
+PUT  /api/auth/me
+POST /api/auth/change-password
 ```
 
-Merchant:
+Merchant shops:
 
 ```text
-GET    /api/merchant/shop
-POST   /api/merchant/shop
-PUT    /api/merchant/shop/:id
-GET    /api/merchant/products
-POST   /api/merchant/products
-PUT    /api/merchant/products/:id
-DELETE /api/merchant/products/:id
-GET    /api/merchant/orders
+GET  /api/merchant/shops?page&limit&q
+POST /api/merchant/shop
+GET  /api/merchant/shops/:shopId
+PUT  /api/merchant/shops/:shopId
+```
+
+Merchant products:
+
+```text
+GET    /api/merchant/shops/:shopId/products?page&limit&q
+POST   /api/merchant/shops/:shopId/products
+GET    /api/merchant/shops/:shopId/products/:productId
+PUT    /api/merchant/shops/:shopId/products/:productId
+DELETE /api/merchant/shops/:shopId/products/:productId
+```
+
+Merchant orders:
+
+```text
+GET /api/merchant/shops/:shopId/orders?page&limit&q
+GET /api/merchant/shops/:shopId/orders/:orderId
+PUT /api/merchant/shops/:shopId/orders/:orderId
 ```
 
 Uploads and AI:
@@ -113,6 +146,21 @@ POST /api/upload
 POST /api/ai
 ```
 
+## Backend Fallbacks
+
+The frontend is API-first, but most merchant pages have local fallback data so UI work can continue before backend endpoints are available.
+
+Fallbacks live in:
+
+```text
+src/shared/lib/merchant-demo-storage.ts
+src/shared/lib/merchant-product-demo-storage.ts
+src/shared/lib/merchant-order-demo-storage.ts
+src/shared/lib/user-demo-storage.ts
+```
+
+They use `localStorage` and should be replaced by real backend responses once the server is connected.
+
 ## Architecture
 
 The app follows a lightweight FSD-style structure:
@@ -120,31 +168,42 @@ The app follows a lightweight FSD-style structure:
 ```text
 src/app        app root, router, route guards
 src/pages      route-level screens
-src/features   business UI blocks
-src/widgets    page shell and reusable page-level UI
+src/features   reusable feature UI blocks
+src/widgets    app/page layout widgets
 src/entities   domain types
 src/shared     API clients, i18n, utilities, small UI primitives
 ```
 
-Merchant code is split like this:
+Merchant route pages live in:
 
 ```text
 src/pages/merchant
-src/features/merchant/overview
-src/features/merchant/shop-settings
-src/features/merchant/products
-src/features/merchant/orders
-src/features/merchant/imports
-src/widgets/merchant-shell
 ```
 
-The page owns orchestration and state. Feature components receive data and callbacks. API clients stay in `src/shared/api`.
+Shared merchant layout:
 
-## Customer Pages Integration Guide
+```text
+src/widgets/merchant-layout
+```
 
-The customer storefront must be separate from the merchant console. Do not add customer flows as sections inside `/merchant`.
+API clients:
 
-Recommended structure:
+```text
+src/shared/api
+```
+
+i18n:
+
+```text
+src/shared/i18n/locales/en.ts
+src/shared/i18n/locales/pt.ts
+```
+
+## Customer Storefront Integration
+
+Customer pages are a separate public flow and should not be implemented inside the merchant pages.
+
+Recommended future structure:
 
 ```text
 src/pages/home/
@@ -162,51 +221,6 @@ src/shared/api/public.api.ts
 src/shared/api/orders.api.ts
 ```
 
-Recommended routes:
-
-```tsx
-<Route path="/" element={<HomePage />} />
-<Route path="/shops/:shopId" element={<ShopPage />} />
-<Route path="/cart" element={<CartPage />} />
-<Route path="/orders/:orderId" element={<OrderConfirmationPage />} />
-<Route path="/merchant" element={<ProtectedRoute><MerchantPage /></ProtectedRoute>} />
-```
-
-Customer API client:
-
-```ts
-export const publicApi = {
-  getShops(params?: { page?: number; limit?: number; q?: string }) {
-    return apiClient.get('/shops', { params }).then(response => response.data)
-  },
-  getShop(shopId: string) {
-    return apiClient.get(`/shops/${shopId}`).then(response => response.data)
-  },
-  getShopProducts(shopId: string) {
-    return apiClient.get(`/shops/${shopId}/products`).then(response => response.data)
-  },
-}
-```
-
-Orders API client:
-
-```ts
-export const ordersApi = {
-  createOrder(payload: {
-    shopId: string
-    items: Array<{ productId: string; quantity: number }>
-    customerName?: string
-    customerEmail?: string
-    customerPhone?: string
-  }) {
-    return apiClient.post('/orders', payload).then(response => response.data)
-  },
-  getOrder(id: string) {
-    return apiClient.get(`/orders/${id}`).then(response => response.data)
-  },
-}
-```
-
 Expected customer flow:
 
 1. `HomePage` loads active shops from `GET /api/shops?page&limit&q`.
@@ -216,8 +230,8 @@ Expected customer flow:
 5. `CheckoutForm` submits `POST /api/orders`.
 6. `OrderConfirmationPage` shows `guest_order_id` or `qr_code_data`.
 
-Merchant and customer responsibilities are intentionally separate:
+Merchant and customer responsibilities remain separate:
 
-- Merchant creates public shop data and products.
+- Merchant creates and manages shops, products, and orders.
 - Customer reads public shop/product data and creates orders.
-- Merchant sees orders created by customers.
+- Merchant sees and processes orders created by customers.

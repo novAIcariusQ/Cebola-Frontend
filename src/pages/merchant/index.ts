@@ -1,4 +1,3 @@
-export { MerchantPage } from './ui/merchant-page'
 export { MerchantLandingPage } from './ui/merchant-landing-page'
 export { MerchantOrderCataloguePage } from './ui/merchant-order-catalogue-page'
 export { MerchantOrderPage } from './ui/merchant-order-page'

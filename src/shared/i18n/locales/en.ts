@@ -14,6 +14,7 @@ export const en = {
     inactive: 'Inactive',
     empty: 'No records yet',
     close: 'Close',
+    back: 'Back',
     saving: 'Saving',
     saved: 'Saved',
     error: 'Something went wrong',
@@ -101,6 +102,12 @@ export const en = {
       settings: {
         title: 'Settings page',
         description: 'Route prepared for merchant name editing, password change, and logout.',
+        account: 'Account',
+        changePassword: 'Change password',
+        currentPassword: 'Current password',
+        newPassword: 'New password',
+        nameSaved: 'Name saved',
+        passwordChanged: 'Password changed',
       },
     },
     tabs: {

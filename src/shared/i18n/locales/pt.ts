@@ -14,6 +14,7 @@ export const pt = {
     inactive: 'Inativo',
     empty: 'Ainda não há registos',
     close: 'Fechar',
+    back: 'Voltar',
     saving: 'A guardar',
     saved: 'Guardado',
     error: 'Algo correu mal',
@@ -101,6 +102,12 @@ export const pt = {
       settings: {
         title: 'Página de definições',
         description: 'Rota preparada para editar nome do comerciante, alterar palavra-passe e terminar sessão.',
+        account: 'Conta',
+        changePassword: 'Alterar palavra-passe',
+        currentPassword: 'Palavra-passe atual',
+        newPassword: 'Nova palavra-passe',
+        nameSaved: 'Nome guardado',
+        passwordChanged: 'Palavra-passe alterada',
       },
     },
     tabs: {

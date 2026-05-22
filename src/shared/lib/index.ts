@@ -18,3 +18,4 @@ export {
   upsertDemoMerchantOrder,
 } from './merchant-order-demo-storage'
 export { tokenStorage } from './token-storage'
+export { fallbackUser, getDemoUser, setDemoUser } from './user-demo-storage'

@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { Calendar, ChevronLeft, ChevronRight, PackageSearch, Search } from 'lucide-react'
+import { ArrowLeft, Calendar, ChevronLeft, ChevronRight, PackageSearch, Search } from 'lucide-react'
 import { Link, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import type { Order } from '@entities/order'
@@ -71,6 +71,13 @@ export function MerchantOrderCataloguePage() {
   return (
     <div className="space-y-6">
       <section className="rounded-md border border-ink/10 bg-white p-6 shadow-soft">
+        <Link
+          to={`/merchant/shops/${shopId}`}
+          className="mb-4 inline-flex items-center gap-2 text-sm font-semibold text-ink/60 transition hover:text-market"
+        >
+          <ArrowLeft size={16} aria-hidden="true" />
+          {t('common.back')}
+        </Link>
         <h1 className="text-2xl font-semibold text-ink">{t('merchant.pages.orderCatalogue.title')}</h1>
         <p className="mt-2 max-w-2xl text-sm leading-6 text-ink/65">
           {t('merchant.pages.orderCatalogue.description')}
