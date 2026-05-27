@@ -44,6 +44,10 @@ export const en = {
       home: 'Home',
       basket: 'Basket',
     },
+    placeholder: {
+      eyebrow: 'Customer page',
+      landing: 'Landing',
+    },
     pagination: {
       page: 'Page',
       previous: 'Previous page',
@@ -65,6 +69,7 @@ export const en = {
         notFound: 'Product was not found',
         available: 'Available',
         buy: 'Buy now',
+        description: 'Description',
       },
       basket: {
         title: 'Basket',
@@ -74,6 +79,8 @@ export const en = {
         decrease: 'Decrease quantity',
         increase: 'Increase quantity',
         summary: 'Summary',
+        items: 'Items',
+        total: 'Total',
         buy: 'Buy products',
       },
       checkout: {

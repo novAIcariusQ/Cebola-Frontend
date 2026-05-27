@@ -80,11 +80,11 @@ export function CustomerCheckoutPage() {
 
         <div className="mt-6 rounded-md bg-paper p-4">
           <div className="flex justify-between gap-4 text-sm text-ink/70">
-            <span>{t('merchant.orders.items')}</span>
+            <span>{t('customer.pages.basket.items')}</span>
             <strong className="text-ink">{basketItems.reduce((count, item) => count + item.quantity, 0)}</strong>
           </div>
           <div className="mt-3 flex justify-between gap-4 border-t border-ink/10 pt-3">
-            <span className="font-semibold text-ink">{t('merchant.orders.total')}</span>
+            <span className="font-semibold text-ink">{t('customer.pages.basket.total')}</span>
             <strong className="text-market">{formatCurrency(total)}</strong>
           </div>
         </div>

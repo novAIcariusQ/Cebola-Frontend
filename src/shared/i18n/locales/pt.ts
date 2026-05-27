@@ -44,6 +44,10 @@ export const pt = {
       home: 'Início',
       basket: 'Carrinho',
     },
+    placeholder: {
+      eyebrow: 'Página do cliente',
+      landing: 'Página inicial',
+    },
     pagination: {
       page: 'Página',
       previous: 'Página anterior',
@@ -65,6 +69,7 @@ export const pt = {
         notFound: 'Produto não encontrado',
         available: 'Disponível',
         buy: 'Comprar agora',
+        description: 'Descrição',
       },
       basket: {
         title: 'Carrinho',
@@ -74,6 +79,8 @@ export const pt = {
         decrease: 'Diminuir quantidade',
         increase: 'Aumentar quantidade',
         summary: 'Resumo',
+        items: 'Itens',
+        total: 'Total',
         buy: 'Comprar produtos',
       },
       checkout: {

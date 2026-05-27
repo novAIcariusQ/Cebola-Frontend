@@ -128,11 +128,11 @@ export function CustomerBasketPage() {
           <h2 className="text-sm font-semibold uppercase text-ink/45">{t('customer.pages.basket.summary')}</h2>
           <div className="mt-4 space-y-3 text-sm">
             <div className="flex justify-between gap-4 text-ink/70">
-              <span>{t('merchant.orders.items')}</span>
+              <span>{t('customer.pages.basket.items')}</span>
               <strong className="text-ink">{items.reduce((count, item) => count + item.quantity, 0)}</strong>
             </div>
             <div className="flex justify-between gap-4 border-t border-ink/10 pt-3 text-base">
-              <span className="font-semibold text-ink">{t('merchant.orders.total')}</span>
+              <span className="font-semibold text-ink">{t('customer.pages.basket.total')}</span>
               <strong className="text-market">{formatCurrency(total)}</strong>
             </div>
           </div>

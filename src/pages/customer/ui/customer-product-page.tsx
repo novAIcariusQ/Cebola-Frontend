@@ -130,7 +130,7 @@ export function CustomerProductPage() {
       </div>
 
       <section className="rounded-md border border-ink/10 bg-white p-6 shadow-soft">
-        <h2 className="text-sm font-semibold uppercase text-ink/45">{t('merchant.products.description')}</h2>
+        <h2 className="text-sm font-semibold uppercase text-ink/45">{t('customer.pages.product.description')}</h2>
         <p className="mt-3 max-w-3xl text-sm leading-6 text-ink/70">{product.description}</p>
       </section>
     </div>
