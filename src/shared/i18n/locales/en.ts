@@ -61,6 +61,11 @@ export const en = {
         description: 'Search available products and add them to your basket.',
         search: 'Search products',
       },
+      product: {
+        notFound: 'Product was not found',
+        available: 'Available',
+        buy: 'Buy now',
+      },
     },
     basket: {
       add: 'Add',

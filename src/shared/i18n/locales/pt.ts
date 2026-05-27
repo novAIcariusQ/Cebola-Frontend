@@ -61,6 +61,11 @@ export const pt = {
         description: 'Pesquise produtos disponíveis e adicione-os ao carrinho.',
         search: 'Pesquisar produtos',
       },
+      product: {
+        notFound: 'Produto não encontrado',
+        available: 'Disponível',
+        buy: 'Comprar agora',
+      },
     },
     basket: {
       add: 'Adicionar',
