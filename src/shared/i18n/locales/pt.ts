@@ -66,6 +66,16 @@ export const pt = {
         available: 'Disponível',
         buy: 'Comprar agora',
       },
+      basket: {
+        title: 'Carrinho',
+        empty: 'O carrinho está vazio. Abra o catálogo de uma loja e adicione produtos disponíveis.',
+        continueShopping: 'Continuar compras',
+        clear: 'Limpar carrinho',
+        decrease: 'Diminuir quantidade',
+        increase: 'Aumentar quantidade',
+        summary: 'Resumo',
+        buy: 'Comprar produtos',
+      },
     },
     basket: {
       add: 'Adicionar',

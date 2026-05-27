@@ -66,6 +66,16 @@ export const en = {
         available: 'Available',
         buy: 'Buy now',
       },
+      basket: {
+        title: 'Basket',
+        empty: 'Your basket is empty. Open a shop catalogue and add available products.',
+        continueShopping: 'Continue shopping',
+        clear: 'Clear basket',
+        decrease: 'Decrease quantity',
+        increase: 'Increase quantity',
+        summary: 'Summary',
+        buy: 'Buy products',
+      },
     },
     basket: {
       add: 'Add',
