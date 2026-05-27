@@ -39,6 +39,34 @@ export const pt = {
     switchToLogin: 'Usar conta existente',
     demoToken: 'Usar acesso local de demonstração',
   },
+  customer: {
+    navigation: {
+      home: 'Início',
+      basket: 'Carrinho',
+    },
+    pagination: {
+      page: 'Página',
+      previous: 'Página anterior',
+      next: 'Página seguinte',
+    },
+    pages: {
+      landing: {
+        title: 'Encontre lojas locais e encomende o que está disponível agora.',
+        description: 'Pesquise lojas ativas, abra o catálogo da loja e compre produtos disponíveis sem criar conta.',
+        search: 'Pesquisar lojas',
+      },
+      catalogue: {
+        eyebrow: 'Catálogo da loja',
+        title: 'Produtos',
+        description: 'Pesquise produtos disponíveis e adicione-os ao carrinho.',
+        search: 'Pesquisar produtos',
+      },
+    },
+    basket: {
+      add: 'Adicionar',
+      added: 'Produto adicionado ao carrinho',
+    },
+  },
   merchant: {
     title: 'Consola do comerciante',
     subtitle: 'Espaço de operações da loja',

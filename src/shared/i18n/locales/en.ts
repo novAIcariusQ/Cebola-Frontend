@@ -39,6 +39,34 @@ export const en = {
     switchToLogin: 'Use existing account',
     demoToken: 'Use local demo access',
   },
+  customer: {
+    navigation: {
+      home: 'Home',
+      basket: 'Basket',
+    },
+    pagination: {
+      page: 'Page',
+      previous: 'Previous page',
+      next: 'Next page',
+    },
+    pages: {
+      landing: {
+        title: 'Find local shops and order what is available now.',
+        description: 'Search active shops, open a shop catalogue, and buy available products without creating an account.',
+        search: 'Search shops',
+      },
+      catalogue: {
+        eyebrow: 'Shop catalogue',
+        title: 'Products',
+        description: 'Search available products and add them to your basket.',
+        search: 'Search products',
+      },
+    },
+    basket: {
+      add: 'Add',
+      added: 'Product added to basket',
+    },
+  },
   merchant: {
     title: 'Merchant console',
     subtitle: 'Shop operations workspace',
