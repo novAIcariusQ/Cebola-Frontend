@@ -1,0 +1,71 @@
+name: Deploy
+
+on:
+  push:
+    branches: [dev, main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24.x
+          cache: npm
+
+      - name: Resolve target environment
+        id: target
+        shell: bash
+        run: |
+          if [ "${GITHUB_REF}" = "refs/heads/main" ]; then
+            echo "env_name=prod" >> "$GITHUB_OUTPUT"
+            echo "remote_dist=/opt/cebola/prod/frontend/dist" >> "$GITHUB_OUTPUT"
+            API_URL="${{ secrets.VITE_API_BASE_URL_PROD }}"
+          else
+            echo "env_name=dev" >> "$GITHUB_OUTPUT"
+            echo "remote_dist=/opt/cebola/dev/frontend/dist" >> "$GITHUB_OUTPUT"
+            API_URL="${{ secrets.VITE_API_BASE_URL_DEV }}"
+          fi
+          if [ -z "$API_URL" ]; then
+            API_URL="/api"
+          fi
+          echo "api_url=$API_URL" >> "$GITHUB_OUTPUT"
+
+      - name: Build frontend
+        run: |
+          npm ci
+          npm run build
+        env:
+          VITE_API_BASE_URL: ${{ steps.target.outputs.api_url }}
+
+      - name: Prepare remote directory
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          script: mkdir -p ${{ steps.target.outputs.remote_dist }}
+
+      - name: Upload build artifacts
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          source: dist/*
+          target: ${{ steps.target.outputs.remote_dist }}
+          strip_components: 1
+          overwrite: true
+
+      - name: Reload nginx
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          script: nginx -t && systemctl reload nginx
