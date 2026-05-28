@@ -7,6 +7,7 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    environment: ${{ github.ref_name == 'main' && 'prod' || 'dev' }}
     steps:
       - uses: actions/checkout@v4
 
@@ -22,12 +23,11 @@ jobs:
           if [ "${GITHUB_REF}" = "refs/heads/main" ]; then
             echo "env_name=prod" >> "$GITHUB_OUTPUT"
             echo "remote_dist=/opt/cebola/prod/frontend/dist" >> "$GITHUB_OUTPUT"
-            API_URL="${{ secrets.VITE_API_BASE_URL_PROD }}"
           else
             echo "env_name=dev" >> "$GITHUB_OUTPUT"
             echo "remote_dist=/opt/cebola/dev/frontend/dist" >> "$GITHUB_OUTPUT"
-            API_URL="${{ secrets.VITE_API_BASE_URL_DEV }}"
           fi
+          API_URL="${{ secrets.VITE_API_BASE_URL }}"
           if [ -z "$API_URL" ]; then
             API_URL="/api"
           fi
