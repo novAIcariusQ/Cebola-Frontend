@@ -1,4 +1,27 @@
 export { formatCurrency } from './formatters'
+export {
+  CUSTOMER_BASKET_EVENT,
+  addCustomerBasketProduct,
+  clearCustomerBasket,
+  createCustomerOrderPayload,
+  decreaseCustomerBasketItem,
+  getCustomerBasketItems,
+  getCustomerBasketQuantity,
+  getCustomerBasketShopId,
+  getCustomerBasketTotal,
+  increaseCustomerBasketItem,
+  removeCustomerBasketItem,
+  setCustomerBasketItems,
+  updateCustomerBasketItemQuantity,
+} from './customer-basket-storage'
+export {
+  getDemoCustomerProduct,
+  getDemoCustomerShop,
+  getDemoCustomerShopProducts,
+  getDemoCustomerShopProductsPage,
+  getDemoCustomerShops,
+  getDemoCustomerShopsPage,
+} from './customer-demo-storage'
 export { fallbackShops, getDemoMerchantShop, getDemoMerchantShops, upsertDemoMerchantShop } from './merchant-demo-storage'
 export {
   fallbackProducts,

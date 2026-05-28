@@ -1,6 +1,6 @@
 # Cebola Frontend
 
-React/Vite frontend for the Cebola MVP. The current implementation covers the merchant-facing flow from the project board: auth pages, merchant header, shops landing, shop creation/detail, product catalogue/create/detail, order catalogue/detail, settings, upload hooks, AI describe hooks, and EN/PT localization.
+React/Vite frontend for the Cebola MVP. The current implementation covers the public customer storefront and the merchant-facing flow from the project board: customer shop search, product catalogue/detail, basket, checkout redirect, merchant auth, merchant shop/product/order management, settings, upload hooks, AI describe hooks, and EN/PT localization.
 
 ## Stack
 
@@ -69,7 +69,21 @@ This runs TypeScript checks and then `vite build`.
 
 ## Demo Access
 
-Backend auth is not required for frontend development. Open `/login/sign-in` and click `Use local demo access`; this stores a local frontend token and redirects to `/merchant/shops`.
+Backend auth is not required for merchant frontend development. Open `/login/sign-in` and click `Use local demo access`; this stores a local frontend token and redirects to `/merchant/shops`.
+
+The customer storefront is public and starts at `/`. It can use backend public endpoints or local demo data derived from merchant demo storage.
+
+## Customer Routes
+
+```text
+/
+/shops/:shopId/products
+/shops/:shopId/products/:productId
+/basket
+/checkout
+```
+
+`/`, `/shops/:shopId/products`, `/shops/:shopId/products/:productId`, and `/basket` use the customer layout with home, basket, and language switch actions. `/checkout` intentionally has no customer header because it creates the order and redirects to the backend-provided Stripe/payment URL.
 
 ## Merchant Routes
 
@@ -88,7 +102,16 @@ Backend auth is not required for frontend development. Open `/login/sign-in` and
 /merchant/settings
 ```
 
-`/merchant` redirects to `/merchant/shops`. Unknown routes redirect to the merchant landing page.
+`/merchant` redirects to `/merchant/shops`. Unknown routes redirect to the public customer landing page `/`.
+
+## Implemented Customer Scope
+
+- Customer header: home button, basket button with quantity badge, language switcher.
+- Customer landing: shop search, merchant sign in/sign up links, public shop cards, pagination.
+- Product catalogue: shop title/description, product search, product cards, prices, add-to-basket, pagination.
+- Product page: product image, name, shop title, price, available quantity, description, add-to-basket, buy-now.
+- Basket page: item list, image/name/price/current quantity, increase/decrease, remove, clear basket, total cost, checkout link.
+- Checkout page: creates an order from the basket and redirects to a backend-provided Stripe/payment link. It does not collect card data in this frontend.
 
 ## Implemented Merchant Scope
 
@@ -107,6 +130,19 @@ Backend auth is not required for frontend development. Open `/login/sign-in` and
 - Language switch: Portuguese and English, persisted in `localStorage`.
 
 ## API Contracts Used
+
+Customer storefront:
+
+```text
+GET  /api/shops?page&limit&q
+GET  /api/shops/:shopId
+GET  /api/shops/:shopId/products?page&limit&q
+GET  /api/shops/:shopId/products/:productId
+POST /api/orders
+GET  /api/orders/:orderId
+```
+
+The customer API client normalizes common backend field variants such as `cost`, `amount`, `logo`, `photo_url`, `shop_id`, `shop_title`, `is_avalible`, `payment_url`, `stripe_url`, and `checkout_url`.
 
 Auth:
 
@@ -154,18 +190,20 @@ POST /api/ai
 
 ## Backend Fallbacks
 
-The frontend is API-first, but most merchant pages have local fallback data so UI work can continue before backend endpoints are available.
+The frontend is API-first, but customer and merchant pages have local fallback data so UI work can continue before backend endpoints are available.
 
 Fallbacks live in:
 
 ```text
+src/shared/lib/customer-demo-storage.ts
+src/shared/lib/customer-basket-storage.ts
 src/shared/lib/merchant-demo-storage.ts
 src/shared/lib/merchant-product-demo-storage.ts
 src/shared/lib/merchant-order-demo-storage.ts
 src/shared/lib/user-demo-storage.ts
 ```
 
-They use `localStorage` and should be replaced by real backend responses once the server is connected.
+They use `localStorage` and should be replaced by real backend responses once the server is connected. Customer basket storage is intentionally client-side and scoped to one `shopId` at a time, because the order payload is created for one shop.
 
 ## Architecture
 
@@ -186,10 +224,22 @@ Merchant route pages live in:
 src/pages/merchant
 ```
 
+Customer route pages live in:
+
+```text
+src/pages/customer
+```
+
 Shared merchant layout:
 
 ```text
 src/widgets/merchant-layout
+```
+
+Shared customer layout:
+
+```text
+src/widgets/customer-layout
 ```
 
 API clients:
@@ -205,39 +255,10 @@ src/shared/i18n/locales/en.ts
 src/shared/i18n/locales/pt.ts
 ```
 
-## Customer Storefront Integration
+## Domain Separation
 
-Customer pages are a separate public flow and should not be implemented inside the merchant pages.
-
-Recommended future structure:
-
-```text
-src/pages/home/
-src/pages/shop/
-src/pages/cart/
-src/pages/order-confirmation/
-
-src/features/customer/shop-search/
-src/features/customer/shop-list/
-src/features/customer/product-catalog/
-src/features/customer/cart/
-src/features/customer/checkout/
-
-src/shared/api/public.api.ts
-src/shared/api/orders.api.ts
-```
-
-Expected customer flow:
-
-1. `HomePage` loads active shops from `GET /api/shops?page&limit&q`.
-2. `ShopPage` loads shop details and available products.
-3. `ProductCatalog` adds products to a cart.
-4. Cart state is stored in a customer cart feature, preferably with `localStorage` persistence.
-5. `CheckoutForm` submits `POST /api/orders`.
-6. `OrderConfirmationPage` shows `guest_order_id` or `qr_code_data`.
-
-Merchant and customer responsibilities remain separate:
+Merchant and customer responsibilities are separate:
 
 - Merchant creates and manages shops, products, and orders.
-- Customer reads public shop/product data and creates orders.
+- Customer reads public shop/product data, manages a local basket, and creates orders.
 - Merchant sees and processes orders created by customers.

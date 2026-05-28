@@ -1,4 +1,11 @@
 import { Navigate, Route, Routes } from 'react-router-dom'
+import {
+  CustomerBasketPage,
+  CustomerCheckoutPage,
+  CustomerLandingPage,
+  CustomerProductCataloguePage,
+  CustomerProductPage,
+} from '@pages/customer'
 import { LoginPage } from '@pages/login'
 import {
   MerchantLandingPage,
@@ -11,7 +18,7 @@ import {
   MerchantShopCreatePage,
   MerchantShopPage,
 } from '@pages/merchant'
-import { LandingPage } from '@pages/landing'
+import { CustomerLayout } from '@widgets/customer-layout'
 import { MerchantLayout } from '@widgets/merchant-layout'
 import { ProtectedRoute } from './protected-route'
 import { PublicRoute } from './public-route'
@@ -19,7 +26,13 @@ import { PublicRoute } from './public-route'
 export function AppRoutes() {
   return (
     <Routes>
-      <Route path="/" element={<LandingPage />} />
+      <Route element={<CustomerLayout />}>
+        <Route path="/" element={<CustomerLandingPage />} />
+        <Route path="/shops/:shopId/products" element={<CustomerProductCataloguePage />} />
+        <Route path="/shops/:shopId/products/:productId" element={<CustomerProductPage />} />
+        <Route path="/basket" element={<CustomerBasketPage />} />
+      </Route>
+      <Route path="/checkout" element={<CustomerCheckoutPage />} />
       <Route
         path="/login/sign-in"
         element={
@@ -56,7 +69,7 @@ export function AppRoutes() {
         <Route path="shops/:shopId/orders/:orderId" element={<MerchantOrderPage />} />
         <Route path="settings" element={<MerchantSettingsPage />} />
       </Route>
-      <Route path="*" element={<Navigate to="/merchant/shops" replace />} />
+      <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   )
 }

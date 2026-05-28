@@ -39,6 +39,66 @@ export const pt = {
     switchToLogin: 'Usar conta existente',
     demoToken: 'Usar acesso local de demonstração',
   },
+  customer: {
+    navigation: {
+      home: 'Início',
+      basket: 'Carrinho',
+    },
+    placeholder: {
+      eyebrow: 'Página do cliente',
+      landing: 'Página inicial',
+    },
+    pagination: {
+      page: 'Página',
+      previous: 'Página anterior',
+      next: 'Página seguinte',
+    },
+    pages: {
+      landing: {
+        title: 'Encontre lojas locais e encomende o que está disponível agora.',
+        description: 'Pesquise lojas ativas, abra o catálogo da loja e compre produtos disponíveis sem criar conta.',
+        search: 'Pesquisar lojas',
+      },
+      catalogue: {
+        eyebrow: 'Catálogo da loja',
+        title: 'Produtos',
+        description: 'Pesquise produtos disponíveis e adicione-os ao carrinho.',
+        search: 'Pesquisar produtos',
+      },
+      product: {
+        notFound: 'Produto não encontrado',
+        available: 'Disponível',
+        buy: 'Comprar agora',
+        description: 'Descrição',
+      },
+      basket: {
+        title: 'Carrinho',
+        empty: 'O carrinho está vazio. Abra o catálogo de uma loja e adicione produtos disponíveis.',
+        continueShopping: 'Continuar compras',
+        clear: 'Limpar carrinho',
+        decrease: 'Diminuir quantidade',
+        increase: 'Aumentar quantidade',
+        summary: 'Resumo',
+        items: 'Itens',
+        total: 'Total',
+        buy: 'Comprar produtos',
+      },
+      checkout: {
+        eyebrow: 'Pagamento seguro',
+        title: 'A preparar pagamento',
+        description: 'Estamos a criar a encomenda e a abrir a página de pagamento Stripe. Os dados do cartão ficam no Stripe.',
+        creating: 'A criar encomenda e ligação de pagamento...',
+        empty: 'O carrinho está vazio. Adicione produtos antes do pagamento.',
+        missingPaymentLink: 'A encomenda foi criada, mas o backend não devolveu uma ligação de pagamento.',
+        error: 'Não foi possível criar a encomenda. Tente novamente quando o checkout do backend estiver disponível.',
+        openPayment: 'Abrir página de pagamento',
+      },
+    },
+    basket: {
+      add: 'Adicionar',
+      added: 'Produto adicionado ao carrinho',
+    },
+  },
   merchant: {
     title: 'Consola do comerciante',
     subtitle: 'Espaço de operações da loja',

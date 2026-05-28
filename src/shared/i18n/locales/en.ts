@@ -39,6 +39,66 @@ export const en = {
     switchToLogin: 'Use existing account',
     demoToken: 'Use local demo access',
   },
+  customer: {
+    navigation: {
+      home: 'Home',
+      basket: 'Basket',
+    },
+    placeholder: {
+      eyebrow: 'Customer page',
+      landing: 'Landing',
+    },
+    pagination: {
+      page: 'Page',
+      previous: 'Previous page',
+      next: 'Next page',
+    },
+    pages: {
+      landing: {
+        title: 'Find local shops and order what is available now.',
+        description: 'Search active shops, open a shop catalogue, and buy available products without creating an account.',
+        search: 'Search shops',
+      },
+      catalogue: {
+        eyebrow: 'Shop catalogue',
+        title: 'Products',
+        description: 'Search available products and add them to your basket.',
+        search: 'Search products',
+      },
+      product: {
+        notFound: 'Product was not found',
+        available: 'Available',
+        buy: 'Buy now',
+        description: 'Description',
+      },
+      basket: {
+        title: 'Basket',
+        empty: 'Your basket is empty. Open a shop catalogue and add available products.',
+        continueShopping: 'Continue shopping',
+        clear: 'Clear basket',
+        decrease: 'Decrease quantity',
+        increase: 'Increase quantity',
+        summary: 'Summary',
+        items: 'Items',
+        total: 'Total',
+        buy: 'Buy products',
+      },
+      checkout: {
+        eyebrow: 'Secure checkout',
+        title: 'Preparing payment',
+        description: 'We are creating your order and opening the Stripe payment page. Card data is handled by Stripe.',
+        creating: 'Creating order and payment link...',
+        empty: 'Basket is empty. Add products before checkout.',
+        missingPaymentLink: 'Order was created, but backend did not return a payment link.',
+        error: 'Could not create order. Try again after backend checkout is available.',
+        openPayment: 'Open payment page',
+      },
+    },
+    basket: {
+      add: 'Add',
+      added: 'Product added to basket',
+    },
+  },
   merchant: {
     title: 'Merchant console',
     subtitle: 'Shop operations workspace',
