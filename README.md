@@ -13,59 +13,85 @@ React/Vite frontend for the Cebola MVP. The current implementation covers the pu
 - i18next + react-i18next
 - lucide-react icons
 
-## Requirements
+
+## Manualy working with project
+
+### Requirements
 
 - Node.js 20+ recommended
 - npm
 
 The project was last checked with Node `24.14.1`.
 
-## Install
+### Installation
 
+Clone the repo and cd into project:
+```bash
+git clone https://github.com/novAIcariusQ/Cebola-Frontend.git
+cd Cebola-Frontend
+```
+
+Install:
 ```bash
 npm install
 ```
 
 If npm optional dependencies break on Windows, clean the install and run it again:
-
-```powershell
+```bash
 Remove-Item -Recurse -Force node_modules, package-lock.json
 npm install
 ```
 
-## Run Locally
+### Run
 
 ```bash
 npm run dev
 ```
 
-Default local URL:
+Default local URL is `http://localhost:3000`
 
-```text
-http://localhost:3000
-```
+Vite proxies /api to `http://localhost:3001`
 
-Vite proxies `/api` to:
+The proxy is configured in vite.config.ts.
 
-```text
-http://localhost:3001
-```
-
-The proxy is configured in `vite.config.ts`.
-
-## Run via docker compose
-
-```bash
-docker compose up
-```
-
-## Build
+### Build
 
 ```bash
 npm run build
 ```
 
 This runs TypeScript checks and then `vite build`.
+
+
+## Working with project via Docker
+
+### Requirements
+
+- docker
+- docker-compose
+
+> [!NOTE]
+> You may also need to add your user to docker group and reboot your pc. You can follow for exmple [this guide](https://dev.to/abhay_yt_52a8e72b213be229/how-to-install-docker-on-windows-macos-and-linux-a-step-by-step-guide-3a2i) to install Docker on your system.
+
+### Run
+
+Clone the repo and cd into project:
+```bash
+git clone https://github.com/novAIcariusQ/Cebola-Frontend.git
+cd Cebola-Frontend
+```
+
+Run:
+```bash
+docker compose up
+```
+
+### Build
+
+```bash
+docker build . -t cebola-frontend
+```
+
 
 ## Demo Access
 
