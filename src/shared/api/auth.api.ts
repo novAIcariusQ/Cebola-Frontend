@@ -7,11 +7,11 @@ type LoginPayload = {
 }
 
 type RegisterPayload = LoginPayload & {
-  name: string
+  nickname: string
 }
 
 type UpdateProfilePayload = {
-  name: string
+  nickname: string
 }
 
 type ChangePasswordPayload = {

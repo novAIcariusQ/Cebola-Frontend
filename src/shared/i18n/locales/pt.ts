@@ -1,6 +1,7 @@
 export const pt = {
   common: {
     appName: 'Cebola',
+    name: 'Nome',
     loading: 'A carregar',
     save: 'Guardar',
     cancel: 'Cancelar',
@@ -31,7 +32,7 @@ export const pt = {
     password: 'Palavra-passe',
     passwordConfirmation: 'Confirmação da palavra-passe',
     passwordMismatch: 'As palavras-passe não coincidem',
-    name: 'Nome',
+    nickname: 'Alcunha',
     remember: 'Manter sessão iniciada',
     signIn: 'Entrar',
     createAccount: 'Criar conta',
@@ -166,7 +167,7 @@ export const pt = {
         changePassword: 'Alterar palavra-passe',
         currentPassword: 'Palavra-passe atual',
         newPassword: 'Nova palavra-passe',
-        nameSaved: 'Nome guardado',
+        nicknameSaved: 'Alcunha guardada',
         passwordChanged: 'Palavra-passe alterada',
       },
     },
