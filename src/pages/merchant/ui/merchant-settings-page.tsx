@@ -1,5 +1,5 @@
 import { FormEvent, useEffect, useState } from 'react'
-import { KeyRound, LogOut, Pencil, Save, X } from 'lucide-react'
+import { KeyRound, LogOut, Pencil, Save, Sparkles, X } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import type { User } from '@entities/user'
@@ -19,6 +19,9 @@ export function MerchantSettingsPage() {
   const [passwordConfirmation, setPasswordConfirmation] = useState('')
   const [message, setMessage] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
+
+  const isCustomer = tokenStorage.getUserRole() === 'customer'
+  const currentPlan = user?.subscription?.plan ?? 'free'
 
   useEffect(() => {
     let isMounted = true
@@ -83,6 +86,26 @@ export function MerchantSettingsPage() {
   const cancelNicknameEdit = () => {
     setNicknameDraft(user?.nickname ?? '')
     setIsEditingNickname(false)
+  }
+
+  const handleCancelSubscription = () => {
+    if (!user) return
+    setIsSavingNickname(true)
+    setMessage(null)
+    setError(null)
+    setTimeout(() => {
+      const updatedUser = {
+        ...user,
+        subscription: {
+          plan: 'free' as const,
+          status: 'inactive' as const,
+        },
+      }
+      setUser(updatedUser)
+      setDemoUser(updatedUser)
+      setIsSavingNickname(false)
+      setMessage(t('customer.pages.subscription.inactiveStatus'))
+    }, 500)
   }
 
   const changePassword = async (event: FormEvent) => {
@@ -170,6 +193,61 @@ export function MerchantSettingsPage() {
       </section>
 
       <aside className="space-y-6">
+        {isCustomer && (
+          <section className="rounded-md border border-ink/10 bg-white p-5 shadow-soft">
+            <h2 className="flex items-center gap-2 text-sm font-semibold uppercase text-ink/45">
+              <Sparkles size={16} className="text-market" aria-hidden="true" />
+              {t('customer.pages.subscription.title')}
+            </h2>
+            <div className="mt-4 space-y-3 text-sm">
+              <div className="flex items-center justify-between">
+                <span className="text-ink/45">{t('customer.pages.subscription.currentPlan')}</span>
+                <span className="font-semibold text-ink">
+                  {currentPlan === 'premium'
+                    ? t('customer.pages.subscription.premiumPlan')
+                    : t('customer.pages.subscription.freePlan')}
+                </span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-ink/45">{t('customer.pages.subscription.status')}</span>
+                <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${
+                  currentPlan === 'premium'
+                    ? 'bg-market/10 text-market'
+                    : 'bg-ink/10 text-ink/65'
+                }`}>
+                  {currentPlan === 'premium'
+                    ? t('customer.pages.subscription.activeStatus')
+                    : t('customer.pages.subscription.inactiveStatus')}
+                </span>
+              </div>
+              {currentPlan === 'premium' && user?.subscription?.expiresAt && (
+                <div className="flex items-center justify-between">
+                  <span className="text-ink/45">{t('customer.pages.subscription.expires')}</span>
+                  <span className="font-medium text-ink">{user.subscription.expiresAt}</span>
+                </div>
+              )}
+            </div>
+
+            {currentPlan === 'premium' ? (
+              <button
+                type="button"
+                className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-md border border-clay/30 px-4 py-2 text-sm font-semibold text-clay transition hover:bg-clay/5"
+                onClick={handleCancelSubscription}
+              >
+                {t('customer.pages.subscription.cancelBtn')}
+              </button>
+            ) : (
+              <button
+                type="button"
+                className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-md bg-market px-4 py-2 text-sm font-semibold text-white transition hover:bg-market/90"
+                onClick={() => navigate('/subscription')}
+              >
+                {t('customer.pages.subscription.upgradeBtn')}
+              </button>
+            )}
+          </section>
+        )}
+
         <form className="rounded-md border border-ink/10 bg-white p-5 shadow-soft" onSubmit={changePassword}>
           <h2 className="flex items-center gap-2 text-sm font-semibold uppercase text-ink/45">
             <KeyRound size={16} aria-hidden="true" />

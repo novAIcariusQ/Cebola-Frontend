@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react'
-import { ChevronLeft, ChevronRight, Search, Store } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Search, Sparkles, Store } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import type { CustomerShop } from '@entities/customer'
-import { customerApi } from '@shared/api'
-import { getDemoCustomerShopsPage } from '@shared/lib'
+import type { User } from '@entities/user'
+import { customerApi, authApi } from '@shared/api'
+import { getDemoCustomerShopsPage, getDemoUser, USER_PROFILE_EVENT } from '@shared/lib'
 
 import { tokenStorage } from '@shared/lib'
 
@@ -15,9 +16,40 @@ export function CustomerLandingPage() {
   const [page, setPage] = useState(1)
   const [total, setTotal] = useState(0)
   const [isLoading, setIsLoading] = useState(true)
+  const [user, setUser] = useState<User | null>(null)
   const limit = 9
 
   const isCustomerLoggedIn = !!tokenStorage.getToken() && tokenStorage.getUserRole() === 'customer'
+  const userSubscriptionPlan = user?.subscription?.plan ?? 'free'
+  const showSubscriptionAd = userSubscriptionPlan !== 'premium'
+
+  useEffect(() => {
+    let isMounted = true
+    const loadUser = async () => {
+      if (!tokenStorage.getToken()) {
+        if (isMounted) setUser(null)
+        return
+      }
+      try {
+        const apiUser = await authApi.me()
+        if (isMounted) setUser(apiUser)
+      } catch {
+        if (isMounted) setUser(getDemoUser())
+      }
+    }
+
+    const handleProfileUpdate = () => {
+      if (isMounted) void loadUser()
+    }
+
+    void loadUser()
+    window.addEventListener(USER_PROFILE_EVENT, handleProfileUpdate)
+
+    return () => {
+      isMounted = false
+      window.removeEventListener(USER_PROFILE_EVENT, handleProfileUpdate)
+    }
+  }, [])
 
   useEffect(() => {
     let isMounted = true
@@ -96,6 +128,34 @@ export function CustomerLandingPage() {
           }}
         />
       </label>
+
+      {showSubscriptionAd && (
+        <div className="relative overflow-hidden rounded-md border border-market/20 bg-gradient-to-r from-market/5 via-market/10 to-transparent p-6 shadow-sm">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div className="space-y-1">
+              <div className="flex items-center gap-1.5 text-market">
+                <Sparkles size={16} />
+                <span className="text-xs font-bold uppercase tracking-wider text-market">
+                  {t('customer.pages.subscription.adTitle')}
+                </span>
+              </div>
+              <h2 className="text-lg font-bold text-ink">
+                {t('customer.pages.subscription.title')}
+              </h2>
+              <p className="text-sm text-ink/65 max-w-xl">
+                {t('customer.pages.subscription.adDescription')}
+              </p>
+            </div>
+            <Link
+              to="/subscription"
+              className="inline-flex items-center justify-center rounded-md bg-market px-5 py-2.5 text-sm font-semibold text-white shadow transition hover:bg-market/90 whitespace-nowrap"
+            >
+              <Sparkles className="mr-1.5" size={14} />
+              {t('customer.pages.subscription.upgradeBtn')}
+            </Link>
+          </div>
+        </div>
+      )}
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {shops.map(shop => (
