@@ -5,6 +5,7 @@ import {
   CustomerLandingPage,
   CustomerProductCataloguePage,
   CustomerProductPage,
+  CustomerSubscriptionPage,
 } from '@pages/customer'
 import { LoginPage } from '@pages/login'
 import {
@@ -39,6 +40,7 @@ export function AppRoutes() {
             </ProtectedRoute>
           }
         />
+        <Route path="/subscription" element={<CustomerSubscriptionPage />} />
       </Route>
       <Route path="/checkout" element={<CustomerCheckoutPage />} />
       <Route

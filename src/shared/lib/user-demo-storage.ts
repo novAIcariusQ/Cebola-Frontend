@@ -6,6 +6,10 @@ export const fallbackUser: User = {
   id: 'local-demo-user',
   email: 'merchant@example.com',
   nickname: 'Merchant User',
+  subscription: {
+    plan: 'free',
+    status: 'inactive',
+  },
 }
 
 export const USER_PROFILE_EVENT = 'cebola.userProfile.updated'

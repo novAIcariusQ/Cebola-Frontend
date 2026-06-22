@@ -3,6 +3,11 @@ export type User = {
   email: string
   nickname: string
   createdAt?: string
+  subscription?: {
+    plan: 'free' | 'premium'
+    status: 'active' | 'inactive'
+    expiresAt?: string
+  }
 }
 
 export type AuthResponse = {
