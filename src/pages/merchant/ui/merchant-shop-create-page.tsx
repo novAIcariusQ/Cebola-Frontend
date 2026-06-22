@@ -1,20 +1,47 @@
-import { DragEvent, FormEvent, useState } from 'react'
+import { DragEvent, FormEvent, useEffect, useState } from 'react'
 import { ImagePlus, X } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import type { Shop } from '@entities/shop'
-import { merchantApi, uploadApi } from '@shared/api'
-import { upsertDemoMerchantShop } from '@shared/lib'
+import type { User } from '@entities/user'
+import { merchantApi, uploadApi, authApi } from '@shared/api'
+import { upsertDemoMerchantShop, getDemoUser, tokenStorage } from '@shared/lib'
 
 export function MerchantShopCreatePage() {
   const { t } = useTranslation()
   const navigate = useNavigate()
+  const [user, setUser] = useState<User | null>(null)
   const [name, setName] = useState('')
   const [description, setDescription] = useState('')
   const [logoUrl, setLogoUrl] = useState('')
   const [logoPreview, setLogoPreview] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [message, setMessage] = useState<string | null>(null)
+
+  useEffect(() => {
+    let isMounted = true
+    const loadUser = async () => {
+      try {
+        const apiUser = await authApi.me()
+        if (isMounted) setUser(apiUser)
+      } catch {
+        if (isMounted) setUser(getDemoUser())
+      }
+    }
+    void loadUser()
+    return () => {
+      isMounted = false
+    }
+  }, [])
+
+  const currentPlan = user?.subscription?.plan ?? 'free'
+  const hasMerchantSubscription = ['basic', 'standard', 'pro'].includes(currentPlan)
+
+  useEffect(() => {
+    if (user && !hasMerchantSubscription) {
+      navigate('/subscription')
+    }
+  }, [user, hasMerchantSubscription, navigate])
 
   const applyLogoFile = async (file: File) => {
     setMessage(null)

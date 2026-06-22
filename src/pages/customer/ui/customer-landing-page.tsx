@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { ChevronLeft, ChevronRight, Search, Sparkles, Store } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Search, Sparkles, Store, X } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import type { CustomerShop } from '@entities/customer'
@@ -21,7 +21,13 @@ export function CustomerLandingPage() {
 
   const isCustomerLoggedIn = !!tokenStorage.getToken() && tokenStorage.getUserRole() === 'customer'
   const userSubscriptionPlan = user?.subscription?.plan ?? 'free'
-  const showSubscriptionAd = userSubscriptionPlan !== 'premium'
+  const [isAdDismissed, setIsAdDismissed] = useState(() => localStorage.getItem('cebola.customerAdDismissed') === 'true')
+  const showSubscriptionAd = userSubscriptionPlan !== 'premium' && !isAdDismissed
+
+  const handleDismissAd = () => {
+    setIsAdDismissed(true)
+    localStorage.setItem('cebola.customerAdDismissed', 'true')
+  }
 
   useEffect(() => {
     let isMounted = true
@@ -131,7 +137,15 @@ export function CustomerLandingPage() {
 
       {showSubscriptionAd && (
         <div className="relative overflow-hidden rounded-md border border-market/20 bg-gradient-to-r from-market/5 via-market/10 to-transparent p-6 shadow-sm">
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <button
+            type="button"
+            onClick={handleDismissAd}
+            className="absolute right-3 top-3 text-ink/45 transition hover:text-market"
+            aria-label="Dismiss advertisement"
+          >
+            <X size={16} aria-hidden="true" />
+          </button>
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mr-6">
             <div className="space-y-1">
               <div className="flex items-center gap-1.5 text-market">
                 <Sparkles size={16} />

@@ -4,7 +4,7 @@ export type User = {
   nickname: string
   createdAt?: string
   subscription?: {
-    plan: 'free' | 'premium'
+    plan: 'free' | 'premium' | 'basic' | 'standard' | 'pro'
     status: 'active' | 'inactive'
     expiresAt?: string
   }
