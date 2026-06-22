@@ -3,8 +3,9 @@ import { ChevronLeft, ChevronRight, Plus, Search } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import type { Shop } from '@entities/shop'
-import { merchantApi, type MerchantListResponse } from '@shared/api/merchant.api'
-import { getDemoMerchantShops } from '@shared/lib'
+import type { User } from '@entities/user'
+import { merchantApi, authApi, type MerchantListResponse } from '@shared/api'
+import { getDemoMerchantShops, getDemoUser, USER_PROFILE_EVENT, tokenStorage } from '@shared/lib'
 
 export function MerchantLandingPage() {
   const { t } = useTranslation()
@@ -13,7 +14,36 @@ export function MerchantLandingPage() {
   const [page, setPage] = useState(1)
   const [total, setTotal] = useState(0)
   const [isLoading, setIsLoading] = useState(true)
+  const [user, setUser] = useState<User | null>(null)
   const limit = 9
+
+  useEffect(() => {
+    let isMounted = true
+    const loadUser = async () => {
+      if (!tokenStorage.getToken()) return
+      try {
+        const apiUser = await authApi.me()
+        if (isMounted) setUser(apiUser)
+      } catch {
+        if (isMounted) setUser(getDemoUser())
+      }
+    }
+
+    const handleProfileUpdate = () => {
+      if (isMounted) void loadUser()
+    }
+
+    void loadUser()
+    window.addEventListener(USER_PROFILE_EVENT, handleProfileUpdate)
+
+    return () => {
+      isMounted = false
+      window.removeEventListener(USER_PROFILE_EVENT, handleProfileUpdate)
+    }
+  }, [])
+
+  const currentPlan = user?.subscription?.plan ?? 'free'
+  const hasMerchantSubscription = ['basic', 'standard', 'pro'].includes(currentPlan)
 
   const filteredFallbackShops = useMemo(() => {
     const normalizedQuery = query.trim().toLowerCase()
@@ -69,6 +99,25 @@ export function MerchantLandingPage() {
 
   return (
     <div className="space-y-6">
+      {!hasMerchantSubscription && (
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between rounded-md border border-clay/20 bg-clay/5 p-4 text-clay">
+          <div className="flex items-start gap-3">
+            <span className="mt-0.5 inline-block">⚠️</span>
+            <div className="space-y-1">
+              <p className="text-sm font-semibold">
+                {t('customer.pages.subscription.noSubscriptionAlert')}
+              </p>
+            </div>
+          </div>
+          <Link
+            to="/subscription"
+            className="inline-flex items-center justify-center rounded-md bg-clay px-4 py-2 text-xs font-semibold text-white transition hover:bg-clay/90 whitespace-nowrap"
+          >
+            {t('customer.pages.subscription.upgradeBtn')}
+          </Link>
+        </div>
+      )}
+
       <section className="rounded-md border border-ink/10 bg-white p-6 shadow-soft">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
@@ -78,7 +127,7 @@ export function MerchantLandingPage() {
             </p>
           </div>
           <Link
-            to="/merchant/shops/new"
+            to={hasMerchantSubscription ? "/merchant/shops/new" : "/subscription"}
             className="inline-flex items-center gap-2 rounded-md bg-market px-4 py-2 text-sm font-semibold text-white transition hover:bg-market/90"
           >
             <Plus size={16} aria-hidden="true" />
