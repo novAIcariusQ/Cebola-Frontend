@@ -1,6 +1,7 @@
 export const en = {
   common: {
     appName: 'Cebola',
+    name: 'Name',
     loading: 'Loading',
     save: 'Save',
     cancel: 'Cancel',
@@ -31,7 +32,7 @@ export const en = {
     password: 'Password',
     passwordConfirmation: 'Password confirmation',
     passwordMismatch: 'Passwords do not match',
-    name: 'Name',
+    nickname: 'Nickname',
     remember: 'Keep me signed in',
     signIn: 'Sign in',
     createAccount: 'Create account',
@@ -166,7 +167,7 @@ export const en = {
         changePassword: 'Change password',
         currentPassword: 'Current password',
         newPassword: 'New password',
-        nameSaved: 'Name saved',
+        nicknameSaved: 'Nickname saved',
         passwordChanged: 'Password changed',
       },
     },

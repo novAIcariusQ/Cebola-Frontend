@@ -17,7 +17,7 @@ export function LoginForm({ mode = 'sign-in' }: LoginFormProps) {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [passwordConfirmation, setPasswordConfirmation] = useState('')
-  const [name, setName] = useState('')
+  const [nickname, setNickname] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -34,7 +34,7 @@ export function LoginForm({ mode = 'sign-in' }: LoginFormProps) {
 
     try {
       const response = isRegister
-        ? await authApi.register({ email, password, name })
+        ? await authApi.register({ email, password, nickname })
         : await authApi.login({ email, password })
 
       tokenStorage.setToken(response.token)
@@ -69,11 +69,11 @@ export function LoginForm({ mode = 'sign-in' }: LoginFormProps) {
       <form className="space-y-4" onSubmit={submit}>
         {isRegister && (
           <label className="block text-sm font-medium text-ink">
-            {t('login.name')}
+            {t('login.nickname')}
             <input
               className="mt-1 w-full rounded-md border border-ink/15 px-3 py-2 outline-none transition focus:border-market"
-              value={name}
-              onChange={event => setName(event.target.value)}
+              value={nickname}
+              onChange={event => setNickname(event.target.value)}
               required
             />
           </label>

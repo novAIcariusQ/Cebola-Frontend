@@ -184,7 +184,7 @@ export function MerchantOrderPage() {
           <h2 className="text-sm font-semibold uppercase text-ink/45">{t('merchant.orders.contact')}</h2>
           <dl className="mt-4 space-y-3 text-sm">
             <div>
-              <dt className="text-ink/45">{t('login.name')}</dt>
+              <dt className="text-ink/45">{t('common.name')}</dt>
               <dd className="font-medium text-ink">{order.customerName ?? '-'}</dd>
             </div>
             <div>
