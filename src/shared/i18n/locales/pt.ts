@@ -22,6 +22,8 @@ export const pt = {
     remove: 'Remover',
   },
   login: {
+    customer: 'Cliente',
+    merchant: 'Comerciante',
     title: 'Acesso do comerciante',
     subtitle: 'Entre para gerir lojas, produtos, importações e encomendas.',
     signInTitle: 'Entrar',

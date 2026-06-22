@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import type { User } from '@entities/user'
 import { authApi } from '@shared/api'
-import { getDemoUser, setDemoUser, tokenStorage } from '@shared/lib'
+import { getDemoUser, setDemoUser, tokenStorage, USER_PROFILE_EVENT } from '@shared/lib'
 
 export function MerchantSettingsPage() {
   const { t } = useTranslation()
@@ -49,8 +49,14 @@ export function MerchantSettingsPage() {
   }, [])
 
   const logout = () => {
+    const role = tokenStorage.getUserRole()
     tokenStorage.clearToken()
-    navigate('/login/sign-in')
+    window.dispatchEvent(new Event(USER_PROFILE_EVENT))
+    if (role === 'customer') {
+      navigate('/')
+    } else {
+      navigate('/login/sign-in')
+    }
   }
 
   const saveNickname = async () => {
