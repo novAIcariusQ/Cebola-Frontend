@@ -22,6 +22,8 @@ export const en = {
     remove: 'Remove',
   },
   login: {
+    customer: 'Customer',
+    merchant: 'Merchant',
     title: 'Merchant access',
     subtitle: 'Sign in to manage shops, products, imports, and orders.',
     signInTitle: 'Sign in',

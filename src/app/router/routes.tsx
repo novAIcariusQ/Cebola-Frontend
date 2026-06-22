@@ -31,6 +31,14 @@ export function AppRoutes() {
         <Route path="/shops/:shopId/products" element={<CustomerProductCataloguePage />} />
         <Route path="/shops/:shopId/products/:productId" element={<CustomerProductPage />} />
         <Route path="/basket" element={<CustomerBasketPage />} />
+        <Route
+          path="/settings"
+          element={
+            <ProtectedRoute>
+              <MerchantSettingsPage />
+            </ProtectedRoute>
+          }
+        />
       </Route>
       <Route path="/checkout" element={<CustomerCheckoutPage />} />
       <Route

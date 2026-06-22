@@ -6,6 +6,8 @@ import type { CustomerShop } from '@entities/customer'
 import { customerApi } from '@shared/api'
 import { getDemoCustomerShopsPage } from '@shared/lib'
 
+import { tokenStorage } from '@shared/lib'
+
 export function CustomerLandingPage() {
   const { t } = useTranslation()
   const [shops, setShops] = useState<CustomerShop[]>([])
@@ -14,6 +16,8 @@ export function CustomerLandingPage() {
   const [total, setTotal] = useState(0)
   const [isLoading, setIsLoading] = useState(true)
   const limit = 9
+
+  const isCustomerLoggedIn = !!tokenStorage.getToken() && tokenStorage.getUserRole() === 'customer'
 
   useEffect(() => {
     let isMounted = true
@@ -52,31 +56,33 @@ export function CustomerLandingPage() {
 
   return (
     <div className="space-y-6">
-      <section className="overflow-hidden rounded-md border border-ink/10 bg-white shadow-soft">
-        <div className="grid gap-6 p-6 lg:grid-cols-[1fr_auto] lg:items-end">
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-wide text-market">{t('common.appName')}</p>
-            <h1 className="mt-3 max-w-3xl text-3xl font-semibold leading-tight text-ink sm:text-4xl">
-              {t('customer.pages.landing.title')}
-            </h1>
-            <p className="mt-3 max-w-2xl text-sm leading-6 text-ink/65">{t('customer.pages.landing.description')}</p>
+      {!isCustomerLoggedIn && (
+        <section className="overflow-hidden rounded-md border border-ink/10 bg-white shadow-soft">
+          <div className="grid gap-6 p-6 lg:grid-cols-[1fr_auto] lg:items-end">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-wide text-market">{t('common.appName')}</p>
+              <h1 className="mt-3 max-w-3xl text-3xl font-semibold leading-tight text-ink sm:text-4xl">
+                {t('customer.pages.landing.title')}
+              </h1>
+              <p className="mt-3 max-w-2xl text-sm leading-6 text-ink/65">{t('customer.pages.landing.description')}</p>
+            </div>
+            <div className="flex flex-wrap gap-3">
+              <Link
+                to="/login/sign-in"
+                className="rounded-md border border-ink/10 px-4 py-2 text-sm font-semibold text-ink transition hover:border-market hover:text-market"
+              >
+                {t('login.signIn')}
+              </Link>
+              <Link
+                to="/login/sign-up"
+                className="rounded-md bg-market px-4 py-2 text-sm font-semibold text-white transition hover:bg-market/90"
+              >
+                {t('login.createAccount')}
+              </Link>
+            </div>
           </div>
-          <div className="flex flex-wrap gap-3">
-            <Link
-              to="/login/sign-in"
-              className="rounded-md border border-ink/10 px-4 py-2 text-sm font-semibold text-ink transition hover:border-market hover:text-market"
-            >
-              {t('login.signIn')}
-            </Link>
-            <Link
-              to="/login/sign-up"
-              className="rounded-md bg-market px-4 py-2 text-sm font-semibold text-white transition hover:bg-market/90"
-            >
-              {t('login.createAccount')}
-            </Link>
-          </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       <label className="flex items-center gap-3 rounded-md border border-ink/10 bg-white px-4 py-3 shadow-soft">
         <Search size={18} className="text-ink/45" aria-hidden="true" />

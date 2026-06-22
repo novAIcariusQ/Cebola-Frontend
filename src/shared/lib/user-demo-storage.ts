@@ -8,6 +8,8 @@ export const fallbackUser: User = {
   nickname: 'Merchant User',
 }
 
+export const USER_PROFILE_EVENT = 'cebola.userProfile.updated'
+
 export function getDemoUser() {
   const stored = localStorage.getItem(DEMO_USER_KEY)
 
@@ -24,5 +26,6 @@ export function getDemoUser() {
 
 export function setDemoUser(user: User) {
   localStorage.setItem(DEMO_USER_KEY, JSON.stringify(user))
+  window.dispatchEvent(new Event(USER_PROFILE_EVENT))
   return user
 }
