@@ -28,6 +28,24 @@ export function MerchantProductCreatePage() {
   const [isAiLoading, setIsAiLoading] = useState(false)
   const [message, setMessage] = useState<string | null>(null)
 
+  const generateFromImage = async (file: File) => {
+    setIsAiLoading(true)
+    setMessage(null)
+
+    try {
+      const description = await uploadApi.describeProduct(file)
+      setForm(current => ({
+        ...current,
+        title: description.title || current.title,
+        description: description.description || current.description,
+      }))
+    } catch {
+      setMessage(t('common.error'))
+    } finally {
+      setIsAiLoading(false)
+    }
+  }
+
   const applyImageFile = async (file: File) => {
     setImageFile(file)
     const previewUrl = URL.createObjectURL(file)
@@ -39,6 +57,8 @@ export function MerchantProductCreatePage() {
     } catch {
       setForm(current => ({ ...current, photoUrl: previewUrl }))
     }
+
+    void generateFromImage(file)
   }
 
   const handleDrop = (event: DragEvent<HTMLLabelElement>) => {
@@ -56,21 +76,7 @@ export function MerchantProductCreatePage() {
       return
     }
 
-    setIsAiLoading(true)
-    setMessage(null)
-
-    try {
-      const description = await uploadApi.describeProduct(imageFile)
-      setForm(current => ({
-        ...current,
-        title: description.title || current.title,
-        description: description.description || current.description,
-      }))
-    } catch {
-      setMessage(t('common.error'))
-    } finally {
-      setIsAiLoading(false)
-    }
+    await generateFromImage(imageFile)
   }
 
   const submit = async (event: FormEvent) => {
