@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { Home, Settings, ShoppingBasket } from 'lucide-react'
 import { NavLink, Outlet } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { authApi } from '@shared/api'
+import { authApi, subscriptionApi } from '@shared/api'
 import type { User } from '@entities/user'
 import {
   CUSTOMER_BASKET_EVENT,
@@ -30,9 +30,26 @@ export function CustomerLayout() {
       }
 
       try {
-        const apiUser = await authApi.me()
+        const [apiUser, sub] = await Promise.all([
+          authApi.me(),
+          subscriptionApi.getSubscription().catch(() => null),
+        ])
+
+        const userWithSub: User = {
+          ...apiUser,
+          subscription: sub ? {
+            plan: sub.planId.replace('plan-', '') as any,
+            status: sub.status === 'active' ? 'active' : 'inactive',
+            expiresAt: sub.expiresAt ? sub.expiresAt.split('T')[0] : undefined,
+          } : {
+            plan: 'free',
+            status: 'inactive',
+          },
+        }
+
         if (isMounted) {
-          setUser(apiUser)
+          setUser(userWithSub)
+          setDemoUser(userWithSub)
         }
       } catch {
         if (isMounted) {

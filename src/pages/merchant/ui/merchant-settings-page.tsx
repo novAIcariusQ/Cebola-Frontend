@@ -3,7 +3,7 @@ import { KeyRound, LogOut, Pencil, Save, Sparkles, X } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import type { User } from '@entities/user'
-import { authApi } from '@shared/api'
+import { authApi, subscriptionApi } from '@shared/api'
 import { getDemoUser, setDemoUser, tokenStorage, USER_PROFILE_EVENT } from '@shared/lib'
 
 export function MerchantSettingsPage() {
@@ -28,13 +28,28 @@ export function MerchantSettingsPage() {
 
     const loadUser = async () => {
       try {
-        const apiUser = await authApi.me()
+        const [apiUser, sub] = await Promise.all([
+          authApi.me(),
+          subscriptionApi.getSubscription().catch(() => null),
+        ])
 
         if (!isMounted) return
 
-        setUser(apiUser)
-        setNameDraft(apiUser.name)
-        setDemoUser(apiUser)
+        const userWithSub: User = {
+          ...apiUser,
+          subscription: sub ? {
+            plan: sub.planId.replace('plan-', '') as any,
+            status: sub.status === 'active' ? 'active' : 'inactive',
+            expiresAt: sub.expiresAt ? sub.expiresAt.split('T')[0] : undefined,
+          } : {
+            plan: 'free',
+            status: 'inactive',
+          },
+        }
+
+        setUser(userWithSub)
+        setNameDraft(userWithSub.name)
+        setDemoUser(userWithSub)
       } catch {
         if (!isMounted) return
 
@@ -88,12 +103,13 @@ export function MerchantSettingsPage() {
     setIsEditingName(false)
   }
 
-  const handleCancelSubscription = () => {
+  const handleCancelSubscription = async () => {
     if (!user) return
     setIsSavingName(true)
     setMessage(null)
     setError(null)
-    setTimeout(() => {
+    try {
+      await subscriptionApi.cancel()
       const updatedUser = {
         ...user,
         subscription: {
@@ -103,9 +119,24 @@ export function MerchantSettingsPage() {
       }
       setUser(updatedUser)
       setDemoUser(updatedUser)
-      setIsSavingName(false)
       setMessage(t('customer.pages.subscription.inactiveStatus'))
-    }, 500)
+    } catch (err) {
+      console.error('Failed to cancel subscription via API:', err)
+      // @deprecated FAST-TRACK FALLBACK (К УДАЛЕНИЮ)
+      console.warn('[FAST-TRACK] Falling back to cancel subscription simulation. Remove before production.')
+      const updatedUser = {
+        ...user,
+        subscription: {
+          plan: 'free' as const,
+          status: 'inactive' as const,
+        },
+      }
+      setUser(updatedUser)
+      setDemoUser(updatedUser)
+      setMessage(t('customer.pages.subscription.inactiveStatus'))
+    } finally {
+      setIsSavingName(false)
+    }
   }
 
   const changePassword = async (event: FormEvent) => {

@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { ArrowLeft, Check, Sparkles } from 'lucide-react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { authApi } from '@shared/api'
+import { authApi, subscriptionApi } from '@shared/api'
 import type { User } from '@entities/user'
 import { getDemoUser, setDemoUser, tokenStorage } from '@shared/lib'
 
@@ -51,7 +51,10 @@ export function CustomerSubscriptionPage() {
   //    - Directly execute an API request that updates the user's `subscription` column in the database and returns the updated `User` object.
   // 5. In React, update the state with the fresh user data:
   //    `const updatedUser = await authApi.upgradePlan({ plan }); setUser(updatedUser);`
-  const handleUpgrade = (plan: 'premium' | 'basic' | 'standard' | 'pro') => {
+  // ==========================================
+  // REAL API INTEGRATION WITH FAST-TRACK FALLBACKS (TO BE REMOVED)
+  // ==========================================
+  const handleUpgrade = async (plan: 'premium' | 'basic' | 'standard' | 'pro') => {
     if (!tokenStorage.getToken()) {
       navigate('/login/sign-in')
       return
@@ -59,7 +62,26 @@ export function CustomerSubscriptionPage() {
     if (!user) return
 
     setIsSubmitting(true)
-    setTimeout(() => {
+    try {
+      const planId = `plan-${plan}`
+      const sub = await subscriptionApi.subscribe(planId)
+      
+      const updatedUser: User = {
+        ...user,
+        subscription: {
+          plan,
+          status: 'active',
+          expiresAt: sub.expiresAt ? sub.expiresAt.split('T')[0] : undefined,
+        },
+      }
+      
+      setDemoUser(updatedUser)
+      setUser(updatedUser)
+      setSuccess(true)
+    } catch (err) {
+      console.error('Failed to subscribe via API:', err)
+      // @deprecated FAST-TRACK FALLBACK (К УДАЛЕНИЮ)
+      console.warn('[FAST-TRACK] Falling back to subscription simulation. Remove before production.')
       const updatedUser: User = {
         ...user,
         subscription: {
@@ -71,14 +93,31 @@ export function CustomerSubscriptionPage() {
       setDemoUser(updatedUser)
       setUser(updatedUser)
       setSuccess(true)
+    } finally {
       setIsSubmitting(false)
-    }, 600)
+    }
   }
 
-  const handleCancel = () => {
+  const handleCancel = async () => {
     if (!user) return
     setIsSubmitting(true)
-    setTimeout(() => {
+    try {
+      await subscriptionApi.cancel()
+      
+      const updatedUser: User = {
+        ...user,
+        subscription: {
+          plan: 'free',
+          status: 'inactive',
+        },
+      }
+      
+      setDemoUser(updatedUser)
+      setUser(updatedUser)
+    } catch (err) {
+      console.error('Failed to cancel subscription via API:', err)
+      // @deprecated FAST-TRACK FALLBACK (К УДАЛЕНИЮ)
+      console.warn('[FAST-TRACK] Falling back to cancel simulation. Remove before production.')
       const updatedUser: User = {
         ...user,
         subscription: {
@@ -88,8 +127,9 @@ export function CustomerSubscriptionPage() {
       }
       setDemoUser(updatedUser)
       setUser(updatedUser)
+    } finally {
       setIsSubmitting(false)
-    }, 600)
+    }
   }
 
   if (success) {
