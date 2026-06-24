@@ -54,7 +54,7 @@ export function CustomerSubscriptionPage() {
   // ==========================================
   // REAL API INTEGRATION WITH FAST-TRACK FALLBACKS (TO BE REMOVED)
   // ==========================================
-  const handleUpgrade = async (plan: 'premium' | 'basic' | 'standard' | 'pro') => {
+  const handleUpgrade = async (plan: 'premium' | 'basic' | 'pro') => {
     if (!tokenStorage.getToken()) {
       navigate('/login/sign-in')
       return
@@ -63,7 +63,13 @@ export function CustomerSubscriptionPage() {
 
     setIsSubmitting(true)
     try {
-      const planId = `plan-${plan}`
+      let planId = 'plan-free'
+      if (plan === 'premium' || plan === 'basic') {
+        planId = 'plan-basic'
+      } else if (plan === 'pro') {
+        planId = 'plan-pro'
+      }
+
       const sub = await subscriptionApi.subscribe(planId)
 
       const updatedUser: User = {
@@ -180,7 +186,7 @@ export function CustomerSubscriptionPage() {
 
       {isMerchant ? (
         /* Merchant Subscriptions Tiers */
-        <div className="grid gap-6 md:grid-cols-3">
+        <div className="grid gap-6 md:grid-cols-2 max-w-3xl mx-auto">
           {/* Basic Plan */}
           <div className={`relative flex flex-col justify-between rounded-lg border p-6 transition-all ${currentPlan === 'basic'
               ? 'border-market bg-market/5 shadow-sm'
@@ -240,71 +246,6 @@ export function CustomerSubscriptionPage() {
             )}
           </div>
 
-          {/* Standard Plan */}
-          <div className={`relative flex flex-col justify-between rounded-lg border-2 p-6 transition-all shadow-sm ${currentPlan === 'standard'
-              ? 'border-market bg-market/5'
-              : 'border-market/40 hover:border-market'
-            }`}>
-            <div className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-market px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-white shadow-sm">
-              Popular
-            </div>
-            <div>
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-1.5">
-                  <h2 className="text-lg font-bold text-ink">{t('customer.pages.subscription.standardPlan')}</h2>
-                  <Sparkles size={14} className="text-market" />
-                </div>
-                {currentPlan === 'standard' && (
-                  <span className="rounded bg-market px-2 py-0.5 text-[10px] font-semibold text-white">
-                    {t('customer.pages.subscription.activeStatus')}
-                  </span>
-                )}
-              </div>
-              <div className="mt-4 flex items-baseline">
-                <span className="text-3xl font-bold tracking-tight text-ink">€19.99</span>
-                <span className="ml-1 text-sm font-medium text-ink/65">/mo</span>
-              </div>
-              <div className="mt-6 border-t border-ink/10 pt-6">
-                <h3 className="text-xs font-semibold uppercase tracking-wider text-ink/65">
-                  {t('customer.pages.subscription.featuresTitleMerchant')}
-                </h3>
-                <ul className="mt-4 space-y-3">
-                  <li className="flex items-start gap-2.5 text-sm text-ink/75">
-                    <Check size={16} className="mt-0.5 text-market" />
-                    <span>{t('customer.pages.subscription.merchantStandardFeature1')}</span>
-                  </li>
-                  <li className="flex items-start gap-2.5 text-sm text-ink/75">
-                    <Check size={16} className="mt-0.5 text-market" />
-                    <span>{t('customer.pages.subscription.merchantStandardFeature2')}</span>
-                  </li>
-                  <li className="flex items-start gap-2.5 text-sm text-ink/75">
-                    <Check size={16} className="mt-0.5 text-market" />
-                    <span>{t('customer.pages.subscription.merchantStandardFeature3')}</span>
-                  </li>
-                </ul>
-              </div>
-            </div>
-            {currentPlan === 'standard' ? (
-              <button
-                type="button"
-                disabled={isSubmitting}
-                onClick={handleCancel}
-                className="mt-8 w-full rounded-md border border-clay px-4 py-2 text-sm font-semibold text-clay transition hover:bg-clay/5 disabled:opacity-50"
-              >
-                {isSubmitting ? t('common.loading') : t('customer.pages.subscription.cancelBtn')}
-              </button>
-            ) : (
-              <button
-                type="button"
-                disabled={isSubmitting}
-                onClick={() => handleUpgrade('standard')}
-                className="mt-8 w-full rounded-md bg-market px-4 py-2 text-sm font-semibold text-white transition hover:bg-market/90 disabled:opacity-50"
-              >
-                {isSubmitting ? t('common.loading') : t('customer.pages.subscription.upgradeBtn')}
-              </button>
-            )}
-          </div>
-
           {/* Pro Plan */}
           <div className={`relative flex flex-col justify-between rounded-lg border p-6 transition-all ${currentPlan === 'pro'
               ? 'border-market bg-market/5 shadow-sm'
@@ -320,7 +261,7 @@ export function CustomerSubscriptionPage() {
                 )}
               </div>
               <div className="mt-4 flex items-baseline">
-                <span className="text-3xl font-bold tracking-tight text-ink">€49.99</span>
+                <span className="text-3xl font-bold tracking-tight text-ink">€29.99</span>
                 <span className="ml-1 text-sm font-medium text-ink/65">/mo</span>
               </div>
               <div className="mt-6 border-t border-ink/10 pt-6">
@@ -419,7 +360,7 @@ export function CustomerSubscriptionPage() {
                 )}
               </div>
               <div className="mt-4 flex items-baseline">
-                <span className="text-4xl font-bold tracking-tight text-ink">€5.99</span>
+                <span className="text-4xl font-bold tracking-tight text-ink">€9.99</span>
                 <span className="ml-1 text-sm font-medium text-ink/65">/mo</span>
               </div>
               <p className="mt-3 text-xs text-ink/50">{t('customer.pages.subscription.adDescription')}</p>
