@@ -5,7 +5,7 @@ const DEMO_USER_KEY = 'cebola.demoUser'
 export const fallbackUser: User = {
   id: 'local-demo-user',
   email: 'merchant@example.com',
-  nickname: 'Merchant User',
+  name: 'Merchant User',
   subscription: {
     plan: 'free',
     status: 'inactive',

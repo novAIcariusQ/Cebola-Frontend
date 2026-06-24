@@ -10,9 +10,9 @@ export function MerchantSettingsPage() {
   const { t } = useTranslation()
   const navigate = useNavigate()
   const [user, setUser] = useState<User | null>(null)
-  const [nicknameDraft, setNicknameDraft] = useState('')
-  const [isEditingNickname, setIsEditingNickname] = useState(false)
-  const [isSavingNickname, setIsSavingNickname] = useState(false)
+  const [nameDraft, setNameDraft] = useState('')
+  const [isEditingName, setIsEditingName] = useState(false)
+  const [isSavingName, setIsSavingName] = useState(false)
   const [isChangingPassword, setIsChangingPassword] = useState(false)
   const [currentPassword, setCurrentPassword] = useState('')
   const [newPassword, setNewPassword] = useState('')
@@ -33,14 +33,14 @@ export function MerchantSettingsPage() {
         if (!isMounted) return
 
         setUser(apiUser)
-        setNicknameDraft(apiUser.nickname)
+        setNameDraft(apiUser.name)
         setDemoUser(apiUser)
       } catch {
         if (!isMounted) return
 
         const demoUser = getDemoUser()
         setUser(demoUser)
-        setNicknameDraft(demoUser.nickname)
+        setNameDraft(demoUser.name)
       }
     }
 
@@ -62,35 +62,35 @@ export function MerchantSettingsPage() {
     }
   }
 
-  const saveNickname = async () => {
+  const saveName = async () => {
     if (!user) return
 
-    setIsSavingNickname(true)
+    setIsSavingName(true)
     setMessage(null)
     setError(null)
 
     try {
-      const updatedUser = await authApi.updateProfile({ nickname: nicknameDraft })
+      const updatedUser = await authApi.updateProfile({ name: nameDraft })
       setUser(updatedUser)
       setDemoUser(updatedUser)
     } catch {
-      const updatedUser = setDemoUser({ ...user, nickname: nicknameDraft })
+      const updatedUser = setDemoUser({ ...user, name: nameDraft })
       setUser(updatedUser)
     } finally {
-      setIsEditingNickname(false)
+      setIsEditingName(false)
       setMessage(t('merchant.pages.settings.nicknameSaved'))
-      setIsSavingNickname(false)
+      setIsSavingName(false)
     }
   }
 
-  const cancelNicknameEdit = () => {
-    setNicknameDraft(user?.nickname ?? '')
-    setIsEditingNickname(false)
+  const cancelNameEdit = () => {
+    setNameDraft(user?.name ?? '')
+    setIsEditingName(false)
   }
 
   const handleCancelSubscription = () => {
     if (!user) return
-    setIsSavingNickname(true)
+    setIsSavingName(true)
     setMessage(null)
     setError(null)
     setTimeout(() => {
@@ -103,7 +103,7 @@ export function MerchantSettingsPage() {
       }
       setUser(updatedUser)
       setDemoUser(updatedUser)
-      setIsSavingNickname(false)
+      setIsSavingName(false)
       setMessage(t('customer.pages.subscription.inactiveStatus'))
     }, 500)
   }
@@ -142,12 +142,12 @@ export function MerchantSettingsPage() {
         <div className="mt-6 rounded-md border border-ink/10 p-4">
           <div className="mb-3 flex items-center justify-between gap-3">
             <span className="text-xs font-semibold uppercase text-ink/45">{t('login.nickname')}</span>
-            {isEditingNickname ? (
+            {isEditingName ? (
               <div className="flex gap-2">
                 <button
                   type="button"
                   className="inline-flex h-9 w-9 items-center justify-center rounded-md border border-ink/10 text-ink transition hover:border-clay hover:text-clay"
-                  onClick={cancelNicknameEdit}
+                  onClick={cancelNameEdit}
                   title={t('common.cancel')}
                   aria-label={t('common.cancel')}
                 >
@@ -156,8 +156,8 @@ export function MerchantSettingsPage() {
                 <button
                   type="button"
                   className="inline-flex h-9 w-9 items-center justify-center rounded-md bg-market text-white disabled:cursor-wait disabled:opacity-60"
-                  onClick={() => void saveNickname()}
-                  disabled={isSavingNickname}
+                  onClick={() => void saveName()}
+                  disabled={isSavingName}
                   title={t('common.save')}
                   aria-label={t('common.save')}
                 >
@@ -168,7 +168,7 @@ export function MerchantSettingsPage() {
               <button
                 type="button"
                 className="inline-flex h-9 w-9 items-center justify-center rounded-md border border-ink/10 text-ink transition hover:border-market hover:text-market"
-                onClick={() => setIsEditingNickname(true)}
+                onClick={() => setIsEditingName(true)}
                 title={t('merchant.products.edit')}
                 aria-label={t('merchant.products.edit')}
               >
@@ -176,15 +176,15 @@ export function MerchantSettingsPage() {
               </button>
             )}
           </div>
-          {isEditingNickname ? (
+          {isEditingName ? (
             <input
               className="w-full rounded-md border border-ink/15 px-3 py-2 text-xl font-semibold outline-none transition focus:border-market"
-              value={nicknameDraft}
-              onChange={event => setNicknameDraft(event.target.value)}
+              value={nameDraft}
+              onChange={event => setNameDraft(event.target.value)}
               required
             />
           ) : (
-            <h2 className="text-2xl font-semibold text-ink">{user?.nickname ?? t('common.loading')}</h2>
+            <h2 className="text-2xl font-semibold text-ink">{user?.name ?? t('common.loading')}</h2>
           )}
         </div>
 

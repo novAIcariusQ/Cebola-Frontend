@@ -1,7 +1,7 @@
 export type User = {
   id: string
   email: string
-  nickname: string
+  name: string
   createdAt?: string
   subscription?: {
     plan: 'free' | 'premium' | 'basic' | 'standard' | 'pro'

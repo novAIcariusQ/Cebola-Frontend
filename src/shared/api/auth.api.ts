@@ -7,11 +7,11 @@ type LoginPayload = {
 }
 
 type RegisterPayload = LoginPayload & {
-  nickname: string
+  name: string
 }
 
 type UpdateProfilePayload = {
-  nickname: string
+  name: string
 }
 
 type ChangePasswordPayload = {
@@ -36,3 +36,4 @@ export const authApi = {
     return apiClient.post<void>('/auth/change-password', payload).then(response => response.data)
   },
 }
+

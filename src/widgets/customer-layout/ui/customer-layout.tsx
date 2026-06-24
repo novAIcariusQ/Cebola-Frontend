@@ -100,7 +100,7 @@ export function CustomerLayout() {
             {isAuthenticated && userRole === 'customer' && (
               <div className="flex items-center gap-3">
                 <span className="text-sm font-semibold text-ink">
-                  {user?.nickname || ''}
+                  {user?.name || ''}
                 </span>
                 <NavLink
                   to="/settings"
