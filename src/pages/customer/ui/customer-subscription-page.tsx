@@ -54,7 +54,7 @@ export function CustomerSubscriptionPage() {
   // ==========================================
   // REAL API INTEGRATION WITH FAST-TRACK FALLBACKS (TO BE REMOVED)
   // ==========================================
-  const handleUpgrade = async (plan: 'premium' | 'basic' | 'standard' | 'pro') => {
+  const handleUpgrade = async (plan: 'premium' | 'basic' | 'pro') => {
     if (!tokenStorage.getToken()) {
       navigate('/login/sign-in')
       return
@@ -63,7 +63,13 @@ export function CustomerSubscriptionPage() {
 
     setIsSubmitting(true)
     try {
-      const planId = `plan-${plan}`
+      let planId = 'plan-free'
+      if (plan === 'premium' || plan === 'basic') {
+        planId = 'plan-basic'
+      } else if (plan === 'pro') {
+        planId = 'plan-pro'
+      }
+
       const sub = await subscriptionApi.subscribe(planId)
 
       const updatedUser: User = {
@@ -354,7 +360,7 @@ export function CustomerSubscriptionPage() {
                 )}
               </div>
               <div className="mt-4 flex items-baseline">
-                <span className="text-4xl font-bold tracking-tight text-ink">€5.99</span>
+                <span className="text-4xl font-bold tracking-tight text-ink">€9.99</span>
                 <span className="ml-1 text-sm font-medium text-ink/65">/mo</span>
               </div>
               <p className="mt-3 text-xs text-ink/50">{t('customer.pages.subscription.adDescription')}</p>
