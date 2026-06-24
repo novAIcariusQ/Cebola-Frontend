@@ -122,7 +122,7 @@ export function MerchantSettingsPage() {
       setMessage(t('customer.pages.subscription.inactiveStatus'))
     } catch (err) {
       console.error('Failed to cancel subscription via API:', err)
-      // @deprecated FAST-TRACK FALLBACK (К УДАЛЕНИЮ)
+      // @deprecated FAST-TRACK FALLBACK
       console.warn('[FAST-TRACK] Falling back to cancel subscription simulation. Remove before production.')
       const updatedUser = {
         ...user,
@@ -241,11 +241,10 @@ export function MerchantSettingsPage() {
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-ink/45">{t('customer.pages.subscription.status')}</span>
-                <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${
-                  currentPlan === 'premium'
+                <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${currentPlan === 'premium'
                     ? 'bg-market/10 text-market'
                     : 'bg-ink/10 text-ink/65'
-                }`}>
+                  }`}>
                   {currentPlan === 'premium'
                     ? t('customer.pages.subscription.activeStatus')
                     : t('customer.pages.subscription.inactiveStatus')}

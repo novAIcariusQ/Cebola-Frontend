@@ -65,7 +65,7 @@ export function CustomerSubscriptionPage() {
     try {
       const planId = `plan-${plan}`
       const sub = await subscriptionApi.subscribe(planId)
-      
+
       const updatedUser: User = {
         ...user,
         subscription: {
@@ -74,13 +74,13 @@ export function CustomerSubscriptionPage() {
           expiresAt: sub.expiresAt ? sub.expiresAt.split('T')[0] : undefined,
         },
       }
-      
+
       setDemoUser(updatedUser)
       setUser(updatedUser)
       setSuccess(true)
     } catch (err) {
       console.error('Failed to subscribe via API:', err)
-      // @deprecated FAST-TRACK FALLBACK (К УДАЛЕНИЮ)
+      // @deprecated FAST-TRACK FALLBACK
       console.warn('[FAST-TRACK] Falling back to subscription simulation. Remove before production.')
       const updatedUser: User = {
         ...user,
@@ -103,7 +103,7 @@ export function CustomerSubscriptionPage() {
     setIsSubmitting(true)
     try {
       await subscriptionApi.cancel()
-      
+
       const updatedUser: User = {
         ...user,
         subscription: {
@@ -111,12 +111,12 @@ export function CustomerSubscriptionPage() {
           status: 'inactive',
         },
       }
-      
+
       setDemoUser(updatedUser)
       setUser(updatedUser)
     } catch (err) {
       console.error('Failed to cancel subscription via API:', err)
-      // @deprecated FAST-TRACK FALLBACK (К УДАЛЕНИЮ)
+      // @deprecated FAST-TRACK FALLBACK
       console.warn('[FAST-TRACK] Falling back to cancel simulation. Remove before production.')
       const updatedUser: User = {
         ...user,
@@ -182,11 +182,10 @@ export function CustomerSubscriptionPage() {
         /* Merchant Subscriptions Tiers */
         <div className="grid gap-6 md:grid-cols-3">
           {/* Basic Plan */}
-          <div className={`relative flex flex-col justify-between rounded-lg border p-6 transition-all ${
-            currentPlan === 'basic'
+          <div className={`relative flex flex-col justify-between rounded-lg border p-6 transition-all ${currentPlan === 'basic'
               ? 'border-market bg-market/5 shadow-sm'
               : 'border-ink/10 hover:border-ink/20'
-          }`}>
+            }`}>
             <div>
               <div className="flex items-center justify-between">
                 <h2 className="text-lg font-bold text-ink">{t('customer.pages.subscription.basicPlan')}</h2>
@@ -242,11 +241,10 @@ export function CustomerSubscriptionPage() {
           </div>
 
           {/* Standard Plan */}
-          <div className={`relative flex flex-col justify-between rounded-lg border-2 p-6 transition-all shadow-sm ${
-            currentPlan === 'standard'
+          <div className={`relative flex flex-col justify-between rounded-lg border-2 p-6 transition-all shadow-sm ${currentPlan === 'standard'
               ? 'border-market bg-market/5'
               : 'border-market/40 hover:border-market'
-          }`}>
+            }`}>
             <div className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-market px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-white shadow-sm">
               Popular
             </div>
@@ -308,11 +306,10 @@ export function CustomerSubscriptionPage() {
           </div>
 
           {/* Pro Plan */}
-          <div className={`relative flex flex-col justify-between rounded-lg border p-6 transition-all ${
-            currentPlan === 'pro'
+          <div className={`relative flex flex-col justify-between rounded-lg border p-6 transition-all ${currentPlan === 'pro'
               ? 'border-market bg-market/5 shadow-sm'
               : 'border-ink/10 hover:border-ink/20'
-          }`}>
+            }`}>
             <div>
               <div className="flex items-center justify-between">
                 <h2 className="text-lg font-bold text-ink">{t('customer.pages.subscription.proPlan')}</h2>
@@ -371,11 +368,10 @@ export function CustomerSubscriptionPage() {
         /* Customer Subscription Plans */
         <div className="grid gap-6 md:grid-cols-2 max-w-3xl mx-auto">
           {/* Free Plan */}
-          <div className={`relative flex flex-col justify-between rounded-lg border p-6 transition-all ${
-            currentPlan === 'free'
+          <div className={`relative flex flex-col justify-between rounded-lg border p-6 transition-all ${currentPlan === 'free'
               ? 'border-ink/20 bg-paper/30 shadow-sm'
               : 'border-ink/10 hover:border-ink/20'
-          }`}>
+            }`}>
             <div>
               <div className="flex items-center justify-between">
                 <h2 className="text-xl font-bold text-ink">{t('customer.pages.subscription.freePlan')}</h2>
@@ -406,11 +402,10 @@ export function CustomerSubscriptionPage() {
           </div>
 
           {/* Premium Plan */}
-          <div className={`relative flex flex-col justify-between rounded-lg border-2 p-6 transition-all shadow-sm ${
-            currentPlan === 'premium'
+          <div className={`relative flex flex-col justify-between rounded-lg border-2 p-6 transition-all shadow-sm ${currentPlan === 'premium'
               ? 'border-market bg-market/5'
               : 'border-market/40 hover:border-market'
-          }`}>
+            }`}>
             <div>
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-1.5">
