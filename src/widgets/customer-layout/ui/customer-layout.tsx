@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react'
-import { Home, Settings, ShoppingBasket } from 'lucide-react'
+import { Home, Settings, ShoppingBasket, Sparkles } from 'lucide-react'
 import { NavLink, Outlet } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { authApi } from '@shared/api'
+import { authApi, subscriptionApi } from '@shared/api'
 import type { User } from '@entities/user'
 import {
   CUSTOMER_BASKET_EVENT,
@@ -30,9 +30,26 @@ export function CustomerLayout() {
       }
 
       try {
-        const apiUser = await authApi.me()
+        const [apiUser, sub] = await Promise.all([
+          authApi.me(),
+          subscriptionApi.getSubscription().catch(() => null),
+        ])
+
+        const userWithSub: User = {
+          ...apiUser,
+          subscription: sub ? {
+            plan: sub.planId.replace('plan-', '') as any,
+            status: sub.status === 'active' ? 'active' : 'inactive',
+            expiresAt: sub.expiresAt ? sub.expiresAt.split('T')[0] : undefined,
+          } : {
+            plan: 'free',
+            status: 'inactive',
+          },
+        }
+
         if (isMounted) {
-          setUser(apiUser)
+          setUser(userWithSub)
+          setDemoUser(userWithSub)
         }
       } catch {
         if (isMounted) {
@@ -100,8 +117,16 @@ export function CustomerLayout() {
             {isAuthenticated && userRole === 'customer' && (
               <div className="flex items-center gap-3">
                 <span className="text-sm font-semibold text-ink">
-                  {user?.nickname || ''}
+                  {user?.name || ''}
                 </span>
+                <NavLink
+                  to="/subscription"
+                  className="inline-flex h-10 w-10 items-center justify-center rounded-md border border-ink/10 bg-white text-ink transition hover:border-market hover:text-market"
+                  title={t('customer.pages.subscription.title')}
+                  aria-label={t('customer.pages.subscription.title')}
+                >
+                  <Sparkles size={18} className="text-market" aria-hidden="true" />
+                </NavLink>
                 <NavLink
                   to="/settings"
                   className="inline-flex h-10 w-10 items-center justify-center rounded-md border border-ink/10 bg-white text-ink transition hover:border-market hover:text-market"

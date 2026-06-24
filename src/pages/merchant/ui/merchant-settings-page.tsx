@@ -3,16 +3,16 @@ import { KeyRound, LogOut, Pencil, Save, Sparkles, X } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import type { User } from '@entities/user'
-import { authApi } from '@shared/api'
+import { authApi, subscriptionApi } from '@shared/api'
 import { getDemoUser, setDemoUser, tokenStorage, USER_PROFILE_EVENT } from '@shared/lib'
 
 export function MerchantSettingsPage() {
   const { t } = useTranslation()
   const navigate = useNavigate()
   const [user, setUser] = useState<User | null>(null)
-  const [nicknameDraft, setNicknameDraft] = useState('')
-  const [isEditingNickname, setIsEditingNickname] = useState(false)
-  const [isSavingNickname, setIsSavingNickname] = useState(false)
+  const [nameDraft, setNameDraft] = useState('')
+  const [isEditingName, setIsEditingName] = useState(false)
+  const [isSavingName, setIsSavingName] = useState(false)
   const [isChangingPassword, setIsChangingPassword] = useState(false)
   const [currentPassword, setCurrentPassword] = useState('')
   const [newPassword, setNewPassword] = useState('')
@@ -28,19 +28,34 @@ export function MerchantSettingsPage() {
 
     const loadUser = async () => {
       try {
-        const apiUser = await authApi.me()
+        const [apiUser, sub] = await Promise.all([
+          authApi.me(),
+          subscriptionApi.getSubscription().catch(() => null),
+        ])
 
         if (!isMounted) return
 
-        setUser(apiUser)
-        setNicknameDraft(apiUser.nickname)
-        setDemoUser(apiUser)
+        const userWithSub: User = {
+          ...apiUser,
+          subscription: sub ? {
+            plan: sub.planId.replace('plan-', '') as any,
+            status: sub.status === 'active' ? 'active' : 'inactive',
+            expiresAt: sub.expiresAt ? sub.expiresAt.split('T')[0] : undefined,
+          } : {
+            plan: 'free',
+            status: 'inactive',
+          },
+        }
+
+        setUser(userWithSub)
+        setNameDraft(userWithSub.name)
+        setDemoUser(userWithSub)
       } catch {
         if (!isMounted) return
 
         const demoUser = getDemoUser()
         setUser(demoUser)
-        setNicknameDraft(demoUser.nickname)
+        setNameDraft(demoUser.name)
       }
     }
 
@@ -62,38 +77,39 @@ export function MerchantSettingsPage() {
     }
   }
 
-  const saveNickname = async () => {
+  const saveName = async () => {
     if (!user) return
 
-    setIsSavingNickname(true)
+    setIsSavingName(true)
     setMessage(null)
     setError(null)
 
     try {
-      const updatedUser = await authApi.updateProfile({ nickname: nicknameDraft })
+      const updatedUser = await authApi.updateProfile({ name: nameDraft })
       setUser(updatedUser)
       setDemoUser(updatedUser)
     } catch {
-      const updatedUser = setDemoUser({ ...user, nickname: nicknameDraft })
+      const updatedUser = setDemoUser({ ...user, name: nameDraft })
       setUser(updatedUser)
     } finally {
-      setIsEditingNickname(false)
+      setIsEditingName(false)
       setMessage(t('merchant.pages.settings.nicknameSaved'))
-      setIsSavingNickname(false)
+      setIsSavingName(false)
     }
   }
 
-  const cancelNicknameEdit = () => {
-    setNicknameDraft(user?.nickname ?? '')
-    setIsEditingNickname(false)
+  const cancelNameEdit = () => {
+    setNameDraft(user?.name ?? '')
+    setIsEditingName(false)
   }
 
-  const handleCancelSubscription = () => {
+  const handleCancelSubscription = async () => {
     if (!user) return
-    setIsSavingNickname(true)
+    setIsSavingName(true)
     setMessage(null)
     setError(null)
-    setTimeout(() => {
+    try {
+      await subscriptionApi.cancel()
       const updatedUser = {
         ...user,
         subscription: {
@@ -103,9 +119,24 @@ export function MerchantSettingsPage() {
       }
       setUser(updatedUser)
       setDemoUser(updatedUser)
-      setIsSavingNickname(false)
       setMessage(t('customer.pages.subscription.inactiveStatus'))
-    }, 500)
+    } catch (err) {
+      console.error('Failed to cancel subscription via API:', err)
+      // @deprecated FAST-TRACK FALLBACK
+      console.warn('[FAST-TRACK] Falling back to cancel subscription simulation. Remove before production.')
+      const updatedUser = {
+        ...user,
+        subscription: {
+          plan: 'free' as const,
+          status: 'inactive' as const,
+        },
+      }
+      setUser(updatedUser)
+      setDemoUser(updatedUser)
+      setMessage(t('customer.pages.subscription.inactiveStatus'))
+    } finally {
+      setIsSavingName(false)
+    }
   }
 
   const changePassword = async (event: FormEvent) => {
@@ -142,12 +173,12 @@ export function MerchantSettingsPage() {
         <div className="mt-6 rounded-md border border-ink/10 p-4">
           <div className="mb-3 flex items-center justify-between gap-3">
             <span className="text-xs font-semibold uppercase text-ink/45">{t('login.nickname')}</span>
-            {isEditingNickname ? (
+            {isEditingName ? (
               <div className="flex gap-2">
                 <button
                   type="button"
                   className="inline-flex h-9 w-9 items-center justify-center rounded-md border border-ink/10 text-ink transition hover:border-clay hover:text-clay"
-                  onClick={cancelNicknameEdit}
+                  onClick={cancelNameEdit}
                   title={t('common.cancel')}
                   aria-label={t('common.cancel')}
                 >
@@ -156,8 +187,8 @@ export function MerchantSettingsPage() {
                 <button
                   type="button"
                   className="inline-flex h-9 w-9 items-center justify-center rounded-md bg-market text-white disabled:cursor-wait disabled:opacity-60"
-                  onClick={() => void saveNickname()}
-                  disabled={isSavingNickname}
+                  onClick={() => void saveName()}
+                  disabled={isSavingName}
                   title={t('common.save')}
                   aria-label={t('common.save')}
                 >
@@ -168,7 +199,7 @@ export function MerchantSettingsPage() {
               <button
                 type="button"
                 className="inline-flex h-9 w-9 items-center justify-center rounded-md border border-ink/10 text-ink transition hover:border-market hover:text-market"
-                onClick={() => setIsEditingNickname(true)}
+                onClick={() => setIsEditingName(true)}
                 title={t('merchant.products.edit')}
                 aria-label={t('merchant.products.edit')}
               >
@@ -176,15 +207,15 @@ export function MerchantSettingsPage() {
               </button>
             )}
           </div>
-          {isEditingNickname ? (
+          {isEditingName ? (
             <input
               className="w-full rounded-md border border-ink/15 px-3 py-2 text-xl font-semibold outline-none transition focus:border-market"
-              value={nicknameDraft}
-              onChange={event => setNicknameDraft(event.target.value)}
+              value={nameDraft}
+              onChange={event => setNameDraft(event.target.value)}
               required
             />
           ) : (
-            <h2 className="text-2xl font-semibold text-ink">{user?.nickname ?? t('common.loading')}</h2>
+            <h2 className="text-2xl font-semibold text-ink">{user?.name ?? t('common.loading')}</h2>
           )}
         </div>
 
@@ -210,11 +241,10 @@ export function MerchantSettingsPage() {
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-ink/45">{t('customer.pages.subscription.status')}</span>
-                <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${
-                  currentPlan === 'premium'
+                <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${currentPlan === 'premium'
                     ? 'bg-market/10 text-market'
                     : 'bg-ink/10 text-ink/65'
-                }`}>
+                  }`}>
                   {currentPlan === 'premium'
                     ? t('customer.pages.subscription.activeStatus')
                     : t('customer.pages.subscription.inactiveStatus')}

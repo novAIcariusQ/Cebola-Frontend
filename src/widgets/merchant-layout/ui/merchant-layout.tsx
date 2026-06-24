@@ -1,10 +1,40 @@
-import { Home, Settings } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { Home, Settings, Sparkles } from 'lucide-react'
 import { NavLink, Outlet } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
+import { authApi } from '@shared/api'
+import type { User } from '@entities/user'
+import { getDemoUser, tokenStorage } from '@shared/lib'
 import { LanguageSwitcher } from '@widgets/language-switcher'
 
 export function MerchantLayout() {
   const { t } = useTranslation()
+  const [user, setUser] = useState<User | null>(null)
+
+  useEffect(() => {
+    let isMounted = true
+
+    const loadUser = async () => {
+      if (!tokenStorage.getToken()) return
+
+      try {
+        const apiUser = await authApi.me()
+        if (isMounted) {
+          setUser(apiUser)
+        }
+      } catch {
+        if (isMounted) {
+          setUser(getDemoUser())
+        }
+      }
+    }
+
+    void loadUser()
+
+    return () => {
+      isMounted = false
+    }
+  }, [])
 
   return (
     <div className="min-h-screen bg-paper text-ink">
@@ -18,6 +48,19 @@ export function MerchantLayout() {
             {t('merchant.navigation.home')}
           </NavLink>
           <div className="flex items-center gap-2">
+            {user?.name && (
+              <span className="text-sm font-semibold text-ink mr-2">
+                {user.name}
+              </span>
+            )}
+            <NavLink
+              to="/subscription"
+              className="inline-flex h-10 w-10 items-center justify-center rounded-md border border-ink/10 bg-white text-ink transition hover:border-market hover:text-market"
+              title={t('customer.pages.subscription.title')}
+              aria-label={t('customer.pages.subscription.title')}
+            >
+              <Sparkles size={18} className="text-market" aria-hidden="true" />
+            </NavLink>
             <NavLink
               to="/merchant/settings"
               className="inline-flex h-10 w-10 items-center justify-center rounded-md border border-ink/10 bg-white text-ink transition hover:border-market hover:text-market"
@@ -36,3 +79,4 @@ export function MerchantLayout() {
     </div>
   )
 }
+

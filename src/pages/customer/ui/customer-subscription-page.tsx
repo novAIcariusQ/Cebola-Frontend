@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { ArrowLeft, Check, Sparkles } from 'lucide-react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { authApi } from '@shared/api'
+import { authApi, subscriptionApi } from '@shared/api'
 import type { User } from '@entities/user'
 import { getDemoUser, setDemoUser, tokenStorage } from '@shared/lib'
 
@@ -51,7 +51,10 @@ export function CustomerSubscriptionPage() {
   //    - Directly execute an API request that updates the user's `subscription` column in the database and returns the updated `User` object.
   // 5. In React, update the state with the fresh user data:
   //    `const updatedUser = await authApi.upgradePlan({ plan }); setUser(updatedUser);`
-  const handleUpgrade = (plan: 'premium' | 'basic' | 'standard' | 'pro') => {
+  // ==========================================
+  // REAL API INTEGRATION WITH FAST-TRACK FALLBACKS (TO BE REMOVED)
+  // ==========================================
+  const handleUpgrade = async (plan: 'premium' | 'basic' | 'standard' | 'pro') => {
     if (!tokenStorage.getToken()) {
       navigate('/login/sign-in')
       return
@@ -59,7 +62,26 @@ export function CustomerSubscriptionPage() {
     if (!user) return
 
     setIsSubmitting(true)
-    setTimeout(() => {
+    try {
+      const planId = `plan-${plan}`
+      const sub = await subscriptionApi.subscribe(planId)
+
+      const updatedUser: User = {
+        ...user,
+        subscription: {
+          plan,
+          status: 'active',
+          expiresAt: sub.expiresAt ? sub.expiresAt.split('T')[0] : undefined,
+        },
+      }
+
+      setDemoUser(updatedUser)
+      setUser(updatedUser)
+      setSuccess(true)
+    } catch (err) {
+      console.error('Failed to subscribe via API:', err)
+      // @deprecated FAST-TRACK FALLBACK
+      console.warn('[FAST-TRACK] Falling back to subscription simulation. Remove before production.')
       const updatedUser: User = {
         ...user,
         subscription: {
@@ -71,14 +93,31 @@ export function CustomerSubscriptionPage() {
       setDemoUser(updatedUser)
       setUser(updatedUser)
       setSuccess(true)
+    } finally {
       setIsSubmitting(false)
-    }, 600)
+    }
   }
 
-  const handleCancel = () => {
+  const handleCancel = async () => {
     if (!user) return
     setIsSubmitting(true)
-    setTimeout(() => {
+    try {
+      await subscriptionApi.cancel()
+
+      const updatedUser: User = {
+        ...user,
+        subscription: {
+          plan: 'free',
+          status: 'inactive',
+        },
+      }
+
+      setDemoUser(updatedUser)
+      setUser(updatedUser)
+    } catch (err) {
+      console.error('Failed to cancel subscription via API:', err)
+      // @deprecated FAST-TRACK FALLBACK
+      console.warn('[FAST-TRACK] Falling back to cancel simulation. Remove before production.')
       const updatedUser: User = {
         ...user,
         subscription: {
@@ -88,8 +127,9 @@ export function CustomerSubscriptionPage() {
       }
       setDemoUser(updatedUser)
       setUser(updatedUser)
+    } finally {
       setIsSubmitting(false)
-    }, 600)
+    }
   }
 
   if (success) {
@@ -142,11 +182,10 @@ export function CustomerSubscriptionPage() {
         /* Merchant Subscriptions Tiers */
         <div className="grid gap-6 md:grid-cols-3">
           {/* Basic Plan */}
-          <div className={`relative flex flex-col justify-between rounded-lg border p-6 transition-all ${
-            currentPlan === 'basic'
+          <div className={`relative flex flex-col justify-between rounded-lg border p-6 transition-all ${currentPlan === 'basic'
               ? 'border-market bg-market/5 shadow-sm'
               : 'border-ink/10 hover:border-ink/20'
-          }`}>
+            }`}>
             <div>
               <div className="flex items-center justify-between">
                 <h2 className="text-lg font-bold text-ink">{t('customer.pages.subscription.basicPlan')}</h2>
@@ -202,11 +241,10 @@ export function CustomerSubscriptionPage() {
           </div>
 
           {/* Standard Plan */}
-          <div className={`relative flex flex-col justify-between rounded-lg border-2 p-6 transition-all shadow-sm ${
-            currentPlan === 'standard'
+          <div className={`relative flex flex-col justify-between rounded-lg border-2 p-6 transition-all shadow-sm ${currentPlan === 'standard'
               ? 'border-market bg-market/5'
               : 'border-market/40 hover:border-market'
-          }`}>
+            }`}>
             <div className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-market px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-white shadow-sm">
               Popular
             </div>
@@ -268,11 +306,10 @@ export function CustomerSubscriptionPage() {
           </div>
 
           {/* Pro Plan */}
-          <div className={`relative flex flex-col justify-between rounded-lg border p-6 transition-all ${
-            currentPlan === 'pro'
+          <div className={`relative flex flex-col justify-between rounded-lg border p-6 transition-all ${currentPlan === 'pro'
               ? 'border-market bg-market/5 shadow-sm'
               : 'border-ink/10 hover:border-ink/20'
-          }`}>
+            }`}>
             <div>
               <div className="flex items-center justify-between">
                 <h2 className="text-lg font-bold text-ink">{t('customer.pages.subscription.proPlan')}</h2>
@@ -331,11 +368,10 @@ export function CustomerSubscriptionPage() {
         /* Customer Subscription Plans */
         <div className="grid gap-6 md:grid-cols-2 max-w-3xl mx-auto">
           {/* Free Plan */}
-          <div className={`relative flex flex-col justify-between rounded-lg border p-6 transition-all ${
-            currentPlan === 'free'
+          <div className={`relative flex flex-col justify-between rounded-lg border p-6 transition-all ${currentPlan === 'free'
               ? 'border-ink/20 bg-paper/30 shadow-sm'
               : 'border-ink/10 hover:border-ink/20'
-          }`}>
+            }`}>
             <div>
               <div className="flex items-center justify-between">
                 <h2 className="text-xl font-bold text-ink">{t('customer.pages.subscription.freePlan')}</h2>
@@ -366,11 +402,10 @@ export function CustomerSubscriptionPage() {
           </div>
 
           {/* Premium Plan */}
-          <div className={`relative flex flex-col justify-between rounded-lg border-2 p-6 transition-all shadow-sm ${
-            currentPlan === 'premium'
+          <div className={`relative flex flex-col justify-between rounded-lg border-2 p-6 transition-all shadow-sm ${currentPlan === 'premium'
               ? 'border-market bg-market/5'
               : 'border-market/40 hover:border-market'
-          }`}>
+            }`}>
             <div>
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-1.5">
