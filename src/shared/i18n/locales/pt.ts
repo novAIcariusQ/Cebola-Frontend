@@ -106,6 +106,8 @@ export const pt = {
         proPlan: 'Plano Pro',
         currentPlan: 'Plano atual',
         upgradeBtn: 'Aderir ao Premium',
+        upgradeBtnBasic: 'Aderir ao Básico',
+        upgradeBtnPro: 'Aderir ao Pro',
         activeStatus: 'Ativo',
         inactiveStatus: 'Sem subscrição',
         expires: 'Expira em',

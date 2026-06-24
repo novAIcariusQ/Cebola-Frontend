@@ -106,6 +106,8 @@ export const en = {
         proPlan: 'Pro Plan',
         currentPlan: 'Current plan',
         upgradeBtn: 'Upgrade to Premium',
+        upgradeBtnBasic: 'Upgrade to Basic',
+        upgradeBtnPro: 'Upgrade to Pro',
         activeStatus: 'Active',
         inactiveStatus: 'Not subscribed',
         expires: 'Expires at',

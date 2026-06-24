@@ -36,15 +36,22 @@ export function CustomerLayout() {
           subscriptionApi.getSubscription().catch(() => null),
         ])
 
+        let planName: 'free' | 'premium' | 'basic' | 'pro' = 'free'
+        if (sub && sub.status === 'active') {
+          const rawPlan = sub.planId.replace('plan-', '')
+          if (rawPlan === 'pro') {
+            planName = 'pro'
+          } else if (rawPlan === 'basic') {
+            planName = userRole === 'customer' ? 'premium' : 'basic'
+          }
+        }
+
         const userWithSub: User = {
           ...apiUser,
-          subscription: sub ? {
-            plan: sub.planId.replace('plan-', '') as any,
-            status: sub.status === 'active' ? 'active' : 'inactive',
-            expiresAt: sub.expiresAt ? sub.expiresAt.split('T')[0] : undefined,
-          } : {
-            plan: 'free',
-            status: 'inactive',
+          subscription: {
+            plan: planName,
+            status: planName === 'free' ? 'inactive' : 'active',
+            expiresAt: sub && sub.expiresAt ? sub.expiresAt.split('T')[0] : undefined,
           },
         }
 
