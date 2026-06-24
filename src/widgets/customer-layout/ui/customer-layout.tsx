@@ -8,6 +8,7 @@ import {
   CUSTOMER_BASKET_EVENT,
   getCustomerBasketQuantity,
   getDemoUser,
+  setDemoUser,
   tokenStorage,
   USER_PROFILE_EVENT,
 } from '@shared/lib'
