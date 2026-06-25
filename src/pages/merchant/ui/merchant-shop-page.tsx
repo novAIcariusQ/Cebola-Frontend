@@ -6,7 +6,7 @@ import type { Shop } from '@entities/shop'
 import { merchantApi, uploadApi, ratingApi } from '@shared/api'
 import { getDemoMerchantShop, upsertDemoMerchantShop } from '@shared/lib'
 
-type EditableField = 'name' | 'description' | null
+type EditableField = 'name' | 'description' | 'hours' | null
 
 const emptyShop: Shop = {
   id: '',
@@ -14,6 +14,8 @@ const emptyShop: Shop = {
   description: '',
   logoUrl: null,
   isActive: true,
+  openTime: '08:00',
+  closeTime: '20:00',
 }
 
 export function MerchantShopPage() {
@@ -109,6 +111,8 @@ export function MerchantShopPage() {
         description: nextShop.description,
         logoUrl: nextShop.logoUrl ?? '',
         isActive: nextShop.isActive,
+        openTime: nextShop.openTime,
+        closeTime: nextShop.closeTime,
       })
 
       setShop(savedShop)
@@ -272,6 +276,44 @@ export function MerchantShopPage() {
                 />
               ) : (
                 <p className="text-sm leading-6 text-ink/70">{shop.description}</p>
+              )}
+            </EditableBlock>
+
+            <EditableBlock
+              label="Operating Hours"
+              isEditing={editingField === 'hours'}
+              onEdit={() => setEditingField('hours')}
+              onSave={saveEditingField}
+              onCancel={cancelEditing}
+              isSaving={isSaving}
+            >
+              {editingField === 'hours' ? (
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <label className="block text-sm font-medium">
+                    Opening Time
+                    <input
+                      type="time"
+                      className="mt-1 w-full rounded-md border border-ink/15 px-3 py-2 outline-none transition focus:border-market font-mono"
+                      value={draftShop.openTime ?? '08:00'}
+                      onChange={event => setDraftShop(current => ({ ...current, openTime: event.target.value }))}
+                      required
+                    />
+                  </label>
+                  <label className="block text-sm font-medium">
+                    Closing Time
+                    <input
+                      type="time"
+                      className="mt-1 w-full rounded-md border border-ink/15 px-3 py-2 outline-none transition focus:border-market font-mono"
+                      value={draftShop.closeTime ?? '20:00'}
+                      onChange={event => setDraftShop(current => ({ ...current, closeTime: event.target.value }))}
+                      required
+                    />
+                  </label>
+                </div>
+              ) : (
+                <p className="text-sm leading-6 text-ink/70">
+                  {shop.openTime ?? '08:00'} - {shop.closeTime ?? '20:00'}
+                </p>
               )}
             </EditableBlock>
 

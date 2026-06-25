@@ -82,7 +82,7 @@ export function MerchantProductPage() {
       price: nextProduct.price,
       quantity: nextProduct.quantity,
       photoUrl: nextProduct.photoUrl ?? '',
-      isAvailable: nextProduct.quantity > 0 && nextProduct.isAvailable,
+      isAvailable: nextProduct.quantity > 0,
     }
 
     const normalizedProduct = { ...nextProduct, isAvailable: payload.isAvailable }
