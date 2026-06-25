@@ -18,17 +18,21 @@ export function ShopSettings({ shop, isSaving = false, message, onSave, onLogoUp
   const [description, setDescription] = useState(shop?.description ?? '')
   const [logoUrl, setLogoUrl] = useState(shop?.logoUrl ?? '')
   const [isActive, setIsActive] = useState(shop?.isActive ?? true)
+  const [openTime, setOpenTime] = useState(shop?.openTime ?? '08:00')
+  const [closeTime, setCloseTime] = useState(shop?.closeTime ?? '20:00')
 
   useEffect(() => {
     setName(shop?.name ?? '')
     setDescription(shop?.description ?? '')
     setLogoUrl(shop?.logoUrl ?? '')
     setIsActive(shop?.isActive ?? true)
+    setOpenTime(shop?.openTime ?? '08:00')
+    setCloseTime(shop?.closeTime ?? '20:00')
   }, [shop])
 
   const submit = (event: FormEvent) => {
     event.preventDefault()
-    onSave({ name, description, logoUrl, isActive })
+    onSave({ name, description, logoUrl, isActive, openTime, closeTime })
   }
 
   return (
@@ -54,6 +58,28 @@ export function ShopSettings({ shop, isSaving = false, message, onSave, onLogoUp
             required
           />
         </label>
+        <div className="grid gap-4 sm:grid-cols-2">
+          <label className="block text-sm font-medium text-ink">
+            Opening Time
+            <input
+              type="time"
+              className="mt-1 w-full rounded-md border border-ink/15 px-3 py-2 outline-none transition focus:border-market font-mono"
+              value={openTime}
+              onChange={event => setOpenTime(event.target.value)}
+              required
+            />
+          </label>
+          <label className="block text-sm font-medium text-ink">
+            Closing Time
+            <input
+              type="time"
+              className="mt-1 w-full rounded-md border border-ink/15 px-3 py-2 outline-none transition focus:border-market font-mono"
+              value={closeTime}
+              onChange={event => setCloseTime(event.target.value)}
+              required
+            />
+          </label>
+        </div>
         <label className="block text-sm font-medium text-ink">
           {t('merchant.shop.logoUrl')}
           <input

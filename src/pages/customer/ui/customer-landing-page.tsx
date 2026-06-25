@@ -178,12 +178,27 @@ export function CustomerLandingPage() {
             to={`/shops/${shop.id}/products`}
             className="group rounded-md border border-ink/10 bg-white p-4 shadow-soft transition hover:border-market"
           >
-            <div className="mb-4 grid h-32 place-items-center overflow-hidden rounded-md bg-paper">
+            <div className="mb-4 relative h-32 overflow-hidden rounded-md bg-paper">
               {shop.logoUrl ? (
                 <img className="h-full w-full object-cover" src={shop.logoUrl} alt="" />
               ) : (
-                <Store className="text-ink/25 transition group-hover:text-market" size={36} aria-hidden="true" />
+                <div className="grid h-full place-items-center">
+                  <Store className="text-ink/25 transition group-hover:text-market" size={36} aria-hidden="true" />
+                </div>
               )}
+              {/* Dynamic open/closed status badge */}
+              {(() => {
+                const status = getShopOpenStatus(shop.openTime, shop.closeTime)
+                return (
+                  <span
+                    className={`absolute left-2 top-2 rounded px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-white shadow ${
+                      status.isOpen ? 'bg-onion' : 'bg-clay'
+                    }`}
+                  >
+                    {status.label}
+                  </span>
+                )
+              })()}
             </div>
             <h2 className="font-semibold text-ink">{shop.title}</h2>
             {shop.ratingCount && shop.ratingCount > 0 ? (
@@ -241,4 +256,37 @@ export function CustomerLandingPage() {
       </div>
     </div>
   )
+}
+
+function getShopOpenStatus(openTime?: string, closeTime?: string): { isOpen: boolean; label: string } {
+  if (!openTime || !closeTime) {
+    return { isOpen: true, label: 'Open' }
+  }
+
+  const now = new Date()
+  const currentHours = now.getHours()
+  const currentMinutes = now.getMinutes()
+  const currentTimeInMinutes = currentHours * 60 + currentMinutes
+
+  const parseTime = (timeStr: string) => {
+    const [hours, minutes] = timeStr.split(':').map(Number)
+    return hours * 60 + minutes
+  }
+
+  const openTimeInMinutes = parseTime(openTime)
+  const closeTimeInMinutes = parseTime(closeTime)
+
+  if (openTimeInMinutes <= closeTimeInMinutes) {
+    const isOpen = currentTimeInMinutes >= openTimeInMinutes && currentTimeInMinutes < closeTimeInMinutes
+    return {
+      isOpen,
+      label: isOpen ? `Open • Closes at ${closeTime}` : `Closed • Opens at ${openTime}`,
+    }
+  } else {
+    const isOpen = currentTimeInMinutes >= openTimeInMinutes || currentTimeInMinutes < closeTimeInMinutes
+    return {
+      isOpen,
+      label: isOpen ? `Open • Closes at ${closeTime}` : `Closed • Opens at ${openTime}`,
+    }
+  }
 }

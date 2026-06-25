@@ -21,6 +21,7 @@ const emptyForm: ProductFormValues = {
   quantity: 0,
   photoUrl: '',
   isAvailable: true,
+  tags: '',
 }
 
 export function ProductsManager({
@@ -50,6 +51,7 @@ export function ProductsManager({
       quantity: editingProduct.quantity,
       photoUrl: editingProduct.photoUrl ?? '',
       isAvailable: editingProduct.isAvailable,
+      tags: editingProduct.tags ?? '',
     })
   }, [editingProduct])
 
@@ -119,7 +121,18 @@ export function ProductsManager({
                     )}
                   </div>
                 </td>
-                <td className="px-4 py-3 font-medium text-ink">{product.title}</td>
+                <td className="px-4 py-3 font-medium text-ink">
+                  <div>{product.title}</div>
+                  {product.tags && (
+                    <div className="flex flex-wrap gap-1 mt-1">
+                      {product.tags.split(',').map(tag => tag.trim()).filter(Boolean).map((tag, idx) => (
+                        <span key={idx} className="inline-block bg-market/10 text-market text-[10px] font-semibold px-1.5 py-0.5 rounded">
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                </td>
                 <td className="max-w-sm px-4 py-3 text-ink/65">{product.description}</td>
                 <td className="px-4 py-3">{formatCurrency(product.price)}</td>
                 <td className="px-4 py-3">
@@ -222,6 +235,15 @@ export function ProductsManager({
                     className="mt-1 w-full rounded-md border border-ink/15 px-3 py-2 outline-none transition focus:border-market"
                     value={form.photoUrl ?? ''}
                     onChange={event => setForm(current => ({ ...current, photoUrl: event.target.value }))}
+                  />
+                </label>
+                <label className="block text-sm font-medium">
+                  Dietary / Sourcing Tags (comma separated)
+                  <input
+                    className="mt-1 w-full rounded-md border border-ink/15 px-3 py-2 outline-none transition focus:border-market"
+                    value={form.tags ?? ''}
+                    onChange={event => setForm(current => ({ ...current, tags: event.target.value }))}
+                    placeholder="100% Organic, Local Craft, Zero Waste"
                   />
                 </label>
               </div>

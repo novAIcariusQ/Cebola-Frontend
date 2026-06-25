@@ -7,6 +7,8 @@ export type CustomerShop = {
   ownerId?: string
   avgRating?: number
   ratingCount?: number
+  openTime?: string
+  closeTime?: string
 }
 
 export type CustomerProduct = {
@@ -19,6 +21,7 @@ export type CustomerProduct = {
   quantity: number
   photoUrl?: string | null
   isAvailable: boolean
+  tags?: string
 }
 
 export type CustomerBasketItem = {

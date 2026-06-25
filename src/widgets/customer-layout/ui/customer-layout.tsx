@@ -97,7 +97,7 @@ export function CustomerLayout() {
           <div className="flex items-center gap-4">
             <NavLink
               to="/"
-              className="inline-flex items-center gap-2 rounded-md px-3 py-2 text-sm font-semibold text-ink transition hover:bg-paper"
+              className="inline-flex items-center gap-2 rounded-md px-3 py-2 text-sm font-semibold font-display text-ink transition hover:bg-paper"
             >
               <Home size={18} aria-hidden="true" />
               {t('customer.navigation.home')}
@@ -107,13 +107,13 @@ export function CustomerLayout() {
               <div className="flex items-center gap-2 border-l border-ink/10 pl-4">
                 <NavLink
                   to="/login/sign-in"
-                  className="inline-flex items-center justify-center rounded-md px-3 py-2 text-sm font-semibold text-ink transition hover:bg-paper"
+                  className="inline-flex items-center justify-center rounded-md px-3 py-2 text-sm font-semibold font-display text-ink transition hover:bg-paper"
                 >
                   {t('login.signInTitle')}
                 </NavLink>
                 <NavLink
                   to="/login/sign-up"
-                  className="inline-flex items-center justify-center rounded-md bg-market px-3 py-2 text-sm font-semibold text-white transition hover:bg-market/90"
+                  className="inline-flex items-center justify-center rounded-md bg-market px-3 py-2 text-sm font-semibold font-display text-white transition hover:bg-market/90"
                 >
                   {t('login.createAccount')}
                 </NavLink>
@@ -124,7 +124,7 @@ export function CustomerLayout() {
           <div className="flex items-center gap-4">
             {isAuthenticated && userRole === 'customer' && (
               <div className="flex items-center gap-3">
-                <span className="text-sm font-semibold text-ink">
+                <span className="text-sm font-semibold font-display text-ink">
                   {user?.name || ''}
                 </span>
                 <NavLink

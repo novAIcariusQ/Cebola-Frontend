@@ -9,6 +9,8 @@ export const fallbackShops: Shop[] = [
     description: 'Fresh shelf products, daily reservations, and in-store pickup.',
     logoUrl: null,
     isActive: true,
+    openTime: '08:00',
+    closeTime: '20:00',
   },
 ]
 

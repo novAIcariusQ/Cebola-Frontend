@@ -12,6 +12,7 @@ export const fallbackProducts: Product[] = [
     quantity: 32,
     photoUrl: null,
     isAvailable: true,
+    tags: '100% Organic, Local Craft',
   },
   {
     id: 'prod-2',
@@ -22,6 +23,7 @@ export const fallbackProducts: Product[] = [
     quantity: 8,
     photoUrl: null,
     isAvailable: true,
+    tags: 'Local Craft, Freshly Picked',
   },
   {
     id: 'prod-3',
@@ -32,6 +34,7 @@ export const fallbackProducts: Product[] = [
     quantity: 0,
     photoUrl: null,
     isAvailable: false,
+    tags: 'Homemade, Zero Waste',
   },
 ]
 

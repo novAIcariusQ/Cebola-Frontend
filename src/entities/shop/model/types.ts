@@ -6,6 +6,8 @@ export type Shop = {
   logoUrl?: string | null
   isActive: boolean
   createdAt?: string
+  openTime?: string
+  closeTime?: string
 }
 
 export type ShopFormValues = {
@@ -13,4 +15,6 @@ export type ShopFormValues = {
   description: string
   logoUrl?: string
   isActive: boolean
+  openTime?: string
+  closeTime?: string
 }

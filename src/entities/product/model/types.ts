@@ -8,6 +8,7 @@ export type Product = {
   photoUrl?: string | null
   isAvailable: boolean
   createdAt?: string
+  tags?: string
 }
 
 export type ProductFormValues = {
@@ -17,4 +18,5 @@ export type ProductFormValues = {
   quantity: number
   photoUrl?: string
   isAvailable: boolean
+  tags?: string
 }

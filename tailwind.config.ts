@@ -15,7 +15,9 @@ export default {
         soft: '0 12px 40px rgba(23, 33, 29, 0.08)',
       },
       fontFamily: {
-        sans: ['"Segoe UI"', 'Verdana', 'sans-serif'],
+        sans: ['Inter', '"Segoe UI"', 'Verdana', 'sans-serif'],
+        display: ['Montserrat', 'sans-serif'],
+        mono: ['"JetBrains Mono"', 'monospace'],
       },
     },
   },

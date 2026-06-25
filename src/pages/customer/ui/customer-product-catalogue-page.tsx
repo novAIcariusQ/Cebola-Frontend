@@ -196,7 +196,21 @@ export function CustomerProductCataloguePage() {
         <p className="text-xs font-semibold uppercase tracking-wide text-market">
           {t('customer.pages.catalogue.eyebrow')}
         </p>
-        <h1 className="mt-3 text-3xl font-semibold text-ink">{shop?.title ?? t('customer.pages.catalogue.title')}</h1>
+        <div className="mt-3 flex flex-wrap items-center gap-3">
+          <h1 className="text-3xl font-semibold text-ink">{shop?.title ?? t('customer.pages.catalogue.title')}</h1>
+          {shop && (() => {
+            const status = getShopOpenStatus(shop.openTime, shop.closeTime)
+            return (
+              <span
+                className={`rounded px-2.5 py-0.5 text-xs font-semibold uppercase tracking-wider text-white shadow ${
+                  status.isOpen ? 'bg-onion' : 'bg-clay'
+                }`}
+              >
+                {status.label}
+              </span>
+            )
+          })()}
+        </div>
         
         {reviewCount > 0 ? (
           <div className="mt-2 flex items-center gap-2">
@@ -259,6 +273,15 @@ export function CustomerProductCataloguePage() {
                 )}
               </div>
               <h2 className="font-semibold text-ink">{product.title}</h2>
+              {product.tags && (
+                <div className="flex flex-wrap gap-1 mt-1">
+                  {product.tags.split(',').map(tag => tag.trim()).filter(Boolean).map((tag, idx) => (
+                    <span key={idx} className="inline-block bg-onion/10 text-onion text-[10px] font-semibold px-2 py-0.5 rounded-full">
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              )}
               <p className="mt-2 line-clamp-2 text-sm leading-6 text-ink/60">{product.description}</p>
             </Link>
             <div className="mt-4 flex items-center justify-between gap-3">
@@ -461,4 +484,37 @@ export function CustomerProductCataloguePage() {
       </section>
     </div>
   )
+}
+
+function getShopOpenStatus(openTime?: string, closeTime?: string): { isOpen: boolean; label: string } {
+  if (!openTime || !closeTime) {
+    return { isOpen: true, label: 'Open' }
+  }
+
+  const now = new Date()
+  const currentHours = now.getHours()
+  const currentMinutes = now.getMinutes()
+  const currentTimeInMinutes = currentHours * 60 + currentMinutes
+
+  const parseTime = (timeStr: string) => {
+    const [hours, minutes] = timeStr.split(':').map(Number)
+    return hours * 60 + minutes
+  }
+
+  const openTimeInMinutes = parseTime(openTime)
+  const closeTimeInMinutes = parseTime(closeTime)
+
+  if (openTimeInMinutes <= closeTimeInMinutes) {
+    const isOpen = currentTimeInMinutes >= openTimeInMinutes && currentTimeInMinutes < closeTimeInMinutes
+    return {
+      isOpen,
+      label: isOpen ? `Open • Closes at ${closeTime}` : `Closed • Opens at ${openTime}`,
+    }
+  } else {
+    const isOpen = currentTimeInMinutes >= openTimeInMinutes || currentTimeInMinutes < closeTimeInMinutes
+    return {
+      isOpen,
+      label: isOpen ? `Open • Closes at ${closeTime}` : `Closed • Opens at ${openTime}`,
+    }
+  }
 }

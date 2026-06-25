@@ -42,14 +42,14 @@ export function MerchantLayout() {
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6">
           <NavLink
             to="/merchant/shops"
-            className="inline-flex items-center gap-2 rounded-md px-3 py-2 text-sm font-semibold text-ink transition hover:bg-paper"
+            className="inline-flex items-center gap-2 rounded-md px-3 py-2 text-sm font-semibold font-display text-ink transition hover:bg-paper"
           >
             <Home size={18} aria-hidden="true" />
             {t('merchant.navigation.home')}
           </NavLink>
           <div className="flex items-center gap-2">
             {user?.name && (
-              <span className="text-sm font-semibold text-ink mr-2">
+              <span className="text-sm font-semibold font-display text-ink mr-2">
                 {user.name}
               </span>
             )}

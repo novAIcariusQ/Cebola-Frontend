@@ -15,6 +15,8 @@ export function MerchantShopCreatePage() {
   const [description, setDescription] = useState('')
   const [logoUrl, setLogoUrl] = useState('')
   const [logoPreview, setLogoPreview] = useState('')
+  const [openTime, setOpenTime] = useState('08:00')
+  const [closeTime, setCloseTime] = useState('20:00')
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [message, setMessage] = useState<string | null>(null)
 
@@ -76,6 +78,8 @@ export function MerchantShopCreatePage() {
       description,
       logoUrl: logoUrl || null,
       isActive: true,
+      openTime,
+      closeTime,
     }
 
     try {
@@ -84,6 +88,8 @@ export function MerchantShopCreatePage() {
         description,
         logoUrl,
         isActive: true,
+        openTime,
+        closeTime,
       })
 
       upsertDemoMerchantShop(shop)
@@ -148,6 +154,28 @@ export function MerchantShopCreatePage() {
               required
             />
           </label>
+          <div className="grid gap-4 sm:grid-cols-2">
+            <label className="block text-sm font-medium text-ink">
+              Opening Time
+              <input
+                type="time"
+                className="mt-1 w-full rounded-md border border-ink/15 px-3 py-2 outline-none transition focus:border-market font-mono"
+                value={openTime}
+                onChange={event => setOpenTime(event.target.value)}
+                required
+              />
+            </label>
+            <label className="block text-sm font-medium text-ink">
+              Closing Time
+              <input
+                type="time"
+                className="mt-1 w-full rounded-md border border-ink/15 px-3 py-2 outline-none transition focus:border-market font-mono"
+                value={closeTime}
+                onChange={event => setCloseTime(event.target.value)}
+                required
+              />
+            </label>
+          </div>
           {message && <p className="text-sm text-clay">{message}</p>}
         </div>
         <div className="mt-6 flex flex-wrap justify-end gap-3">

@@ -22,6 +22,8 @@ type CustomerShopDto = Partial<CustomerShop> & {
   owner_id?: string
   avg_rating?: number
   rating_count?: number
+  open_time?: string
+  close_time?: string
 }
 
 type CustomerProductDto = Partial<CustomerProduct> & {
@@ -76,6 +78,8 @@ export function normalizeCustomerShop(shop: CustomerShopDto): CustomerShop {
     ownerId: shop.ownerId ?? shop.owner_id ?? '',
     avgRating: shop.avgRating ?? shop.avg_rating ?? undefined,
     ratingCount: shop.ratingCount ?? shop.rating_count ?? undefined,
+    openTime: shop.openTime ?? shop.open_time ?? undefined,
+    closeTime: shop.closeTime ?? shop.close_time ?? undefined,
   }
 }
 
@@ -92,6 +96,7 @@ export function normalizeCustomerProduct(product: CustomerProductDto): CustomerP
     quantity,
     photoUrl: product.photoUrl ?? product.photo_url ?? product.logo ?? null,
     isAvailable: product.isAvailable ?? product.is_available ?? product.is_avalible ?? quantity > 0,
+    tags: product.tags ?? '',
   }
 }
 

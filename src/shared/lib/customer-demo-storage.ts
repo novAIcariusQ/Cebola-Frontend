@@ -28,6 +28,8 @@ export function getDemoCustomerShops(): CustomerShop[] {
       description: shop.description,
       logoUrl: shop.logoUrl,
       isAvailable: shop.isActive,
+      openTime: shop.openTime,
+      closeTime: shop.closeTime,
     }))
 }
 
@@ -62,6 +64,7 @@ export function getDemoCustomerShopProducts(shopId: string): CustomerProduct[] {
       quantity: product.quantity,
       photoUrl: product.photoUrl,
       isAvailable: product.isAvailable,
+      tags: product.tags,
     }))
 }
 
