@@ -1,5 +1,5 @@
 import { FormEvent, useEffect, useState } from 'react'
-import { KeyRound, LogOut, Pencil, Save, Sparkles, X } from 'lucide-react'
+import { HelpCircle, KeyRound, LogOut, Pencil, Save, Sparkles, X } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import type { User } from '@entities/user'
@@ -232,57 +232,77 @@ export function MerchantSettingsPage() {
 
       <aside className="space-y-6">
         {isCustomer && (
-          <section className="rounded-md border border-ink/10 bg-white p-5 shadow-soft">
-            <h2 className="flex items-center gap-2 text-sm font-semibold uppercase text-ink/45">
-              <Sparkles size={16} className="text-market" aria-hidden="true" />
-              {t('customer.pages.subscription.title')}
-            </h2>
-            <div className="mt-4 space-y-3 text-sm">
-              <div className="flex items-center justify-between">
-                <span className="text-ink/45">{t('customer.pages.subscription.currentPlan')}</span>
-                <span className="font-semibold text-ink">
-                  {currentPlan === 'premium'
-                    ? t('customer.pages.subscription.premiumPlan')
-                    : t('customer.pages.subscription.freePlan')}
-                </span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-ink/45">{t('customer.pages.subscription.status')}</span>
-                <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${currentPlan === 'premium'
-                    ? 'bg-market/10 text-market'
-                    : 'bg-ink/10 text-ink/65'
-                  }`}>
-                  {currentPlan === 'premium'
-                    ? t('customer.pages.subscription.activeStatus')
-                    : t('customer.pages.subscription.inactiveStatus')}
-                </span>
-              </div>
-              {currentPlan === 'premium' && user?.subscription?.expiresAt && (
+          <>
+            <section className="rounded-md border border-ink/10 bg-white p-5 shadow-soft">
+              <h2 className="flex items-center gap-2 text-sm font-semibold uppercase text-ink/45">
+                <Sparkles size={16} className="text-market" aria-hidden="true" />
+                {t('customer.pages.subscription.title')}
+              </h2>
+              <div className="mt-4 space-y-3 text-sm">
                 <div className="flex items-center justify-between">
-                  <span className="text-ink/45">{t('customer.pages.subscription.expires')}</span>
-                  <span className="font-medium text-ink">{user.subscription.expiresAt}</span>
+                  <span className="text-ink/45">{t('customer.pages.subscription.currentPlan')}</span>
+                  <span className="font-semibold text-ink">
+                    {currentPlan === 'premium'
+                      ? t('customer.pages.subscription.premiumPlan')
+                      : t('customer.pages.subscription.freePlan')}
+                  </span>
                 </div>
-              )}
-            </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-ink/45">{t('customer.pages.subscription.status')}</span>
+                  <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${currentPlan === 'premium'
+                      ? 'bg-market/10 text-market'
+                      : 'bg-ink/10 text-ink/65'
+                    }`}>
+                    {currentPlan === 'premium'
+                      ? t('customer.pages.subscription.activeStatus')
+                      : t('customer.pages.subscription.inactiveStatus')}
+                  </span>
+                </div>
+                {currentPlan === 'premium' && user?.subscription?.expiresAt && (
+                  <div className="flex items-center justify-between">
+                    <span className="text-ink/45">{t('customer.pages.subscription.expires')}</span>
+                    <span className="font-medium text-ink">{user.subscription.expiresAt}</span>
+                  </div>
+                )}
+              </div>
 
-            {currentPlan === 'premium' ? (
-              <button
-                type="button"
-                className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-md border border-clay/30 px-4 py-2 text-sm font-semibold text-clay transition hover:bg-clay/5"
-                onClick={handleCancelSubscription}
+              {currentPlan === 'premium' ? (
+                <button
+                  type="button"
+                  className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-md border border-clay/30 px-4 py-2 text-sm font-semibold text-clay transition hover:bg-clay/5"
+                  onClick={handleCancelSubscription}
+                >
+                  {t('customer.pages.subscription.cancelBtn')}
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-md bg-market px-4 py-2 text-sm font-semibold text-white transition hover:bg-market/90"
+                  onClick={() => navigate('/subscription')}
+                >
+                  {t('customer.pages.subscription.upgradeBtn')}
+                </button>
+              )}
+            </section>
+
+            <section className="rounded-md border border-ink/10 bg-white p-5 shadow-soft">
+              <h2 className="flex items-center gap-2 text-sm font-semibold uppercase text-ink/45">
+                <HelpCircle size={16} className="text-market" aria-hidden="true" />
+                {t('merchant.pages.settings.faq')}
+              </h2>
+              <p className="mt-2 text-sm leading-6 text-ink/65">
+                {t('merchant.pages.settings.faqDescription')}
+              </p>
+              <a
+                href="https://novaicariusq.github.io/Cebola-userdocs/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-md bg-market px-4 py-2 text-sm font-semibold text-white transition hover:bg-market/90"
               >
-                {t('customer.pages.subscription.cancelBtn')}
-              </button>
-            ) : (
-              <button
-                type="button"
-                className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-md bg-market px-4 py-2 text-sm font-semibold text-white transition hover:bg-market/90"
-                onClick={() => navigate('/subscription')}
-              >
-                {t('customer.pages.subscription.upgradeBtn')}
-              </button>
-            )}
-          </section>
+                {t('merchant.pages.settings.faqButton')}
+              </a>
+            </section>
+          </>
         )}
 
         <form className="rounded-md border border-ink/10 bg-white p-5 shadow-soft" onSubmit={changePassword}>
