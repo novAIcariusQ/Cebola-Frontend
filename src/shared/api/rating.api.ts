@@ -23,7 +23,7 @@ export const ratingApi = {
     limit = 10
   ): Promise<RatingsResponse> => {
     const { data } = await apiClient.get<RatingsResponse>(
-      `/api/shops/${shopId}/ratings`,
+      `/shops/${shopId}/ratings`,
       { params: { page, limit } }
     )
     return data
@@ -35,14 +35,14 @@ export const ratingApi = {
     comment: string
   ): Promise<Rating> => {
     const { data } = await apiClient.post<Rating>(
-      `/api/shops/${shopId}/ratings`,
+      `/shops/${shopId}/ratings`,
       { rating, comment }
     )
     return data
   },
 
   deleteRating: async (shopId: string, ratingId: string): Promise<void> => {
-    await apiClient.delete(`/api/shops/${shopId}/ratings/${ratingId}`)
+    await apiClient.delete(`/shops/${shopId}/ratings/${ratingId}`)
   },
 
   getMerchantRatings: async (
@@ -51,7 +51,7 @@ export const ratingApi = {
     limit = 10
   ): Promise<RatingsResponse> => {
     const { data } = await apiClient.get<RatingsResponse>(
-      `/api/merchant/shops/${shopId}/ratings`,
+      `/merchant/shops/${shopId}/ratings`,
       { params: { page, limit } }
     )
     return data
