@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { ChevronLeft, ChevronRight, Search, Sparkles, Store, X } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Search, Sparkles, Store, Star, X } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import type { CustomerShop } from '@entities/customer'
@@ -186,7 +186,24 @@ export function CustomerLandingPage() {
               )}
             </div>
             <h2 className="font-semibold text-ink">{shop.title}</h2>
-            <p className="mt-1 line-clamp-2 text-sm leading-6 text-ink/60">{shop.description}</p>
+            {shop.ratingCount && shop.ratingCount > 0 ? (
+              <div className="mt-1 flex items-center gap-1.5">
+                <div className="flex text-amber-500">
+                  <Star size={14} className="fill-current" />
+                </div>
+                <span className="text-xs font-semibold text-ink">
+                  {(shop.avgRating || 0).toFixed(1)}
+                </span>
+                <span className="text-xs text-ink/50">
+                  ({shop.ratingCount} {shop.ratingCount === 1 ? t('customer.pages.ratings.reviewCount') : t('customer.pages.ratings.reviewCountPlural')})
+                </span>
+              </div>
+            ) : (
+              <div className="mt-1 text-xs text-ink/40">
+                {t('customer.pages.ratings.empty')}
+              </div>
+            )}
+            <p className="mt-2 line-clamp-2 text-sm leading-6 text-ink/60">{shop.description}</p>
           </Link>
         ))}
       </div>
