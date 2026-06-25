@@ -4,6 +4,7 @@ export type CustomerShop = {
   description?: string
   logoUrl?: string | null
   isAvailable?: boolean
+  ownerId?: string
 }
 
 export type CustomerProduct = {

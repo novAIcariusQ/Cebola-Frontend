@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import type { Shop } from '@entities/shop'
 import type { User } from '@entities/user'
-import { merchantApi, authApi, type MerchantListResponse } from '@shared/api'
+import { merchantApi, authApi, subscriptionApi, type MerchantListResponse } from '@shared/api'
 import { getDemoMerchantShops, getDemoUser, USER_PROFILE_EVENT, tokenStorage } from '@shared/lib'
 
 export function MerchantLandingPage() {
@@ -22,8 +22,28 @@ export function MerchantLandingPage() {
     const loadUser = async () => {
       if (!tokenStorage.getToken()) return
       try {
-        const apiUser = await authApi.me()
-        if (isMounted) setUser(apiUser)
+        const [apiUser, sub] = await Promise.all([
+          authApi.me(),
+          subscriptionApi.getSubscription().catch(() => null),
+        ])
+
+        let planName: 'free' | 'premium' | 'basic' | 'pro' = 'free'
+        if (sub && sub.status === 'active') {
+          const rawPlan = sub.planId.replace('plan-', '')
+          if (rawPlan === 'pro') planName = 'pro'
+          else if (rawPlan === 'basic') planName = 'basic'
+        }
+
+        const userWithSub: User = {
+          ...apiUser,
+          subscription: {
+            plan: planName,
+            status: planName === 'free' ? 'inactive' : 'active',
+            expiresAt: sub?.expiresAt ? sub.expiresAt.split('T')[0] : undefined,
+          },
+        }
+
+        if (isMounted) setUser(userWithSub)
       } catch {
         if (isMounted) setUser(getDemoUser())
       }

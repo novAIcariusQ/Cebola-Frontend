@@ -4,4 +4,5 @@ export { customerApi } from './customer.api'
 export { merchantApi, type MerchantListResponse } from './merchant.api'
 export { uploadApi } from './upload.api'
 export { subscriptionApi, type SubscriptionPlan, type Subscription } from './subscription.api'
+export { ratingApi, type Rating, type RatingsResponse } from './rating.api'
 

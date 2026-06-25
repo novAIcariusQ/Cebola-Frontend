@@ -3,6 +3,7 @@ import { ArrowLeft, Check, Sparkles } from 'lucide-react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { authApi, subscriptionApi } from '@shared/api'
+import type { SubscriptionPlan } from '@shared/api'
 import type { User } from '@entities/user'
 import { getDemoUser, setDemoUser, tokenStorage } from '@shared/lib'
 
@@ -10,6 +11,7 @@ export function CustomerSubscriptionPage() {
   const { t } = useTranslation()
   const navigate = useNavigate()
   const [user, setUser] = useState<User | null>(null)
+  const [plans, setPlans] = useState<SubscriptionPlan[]>([])
   const [success, setSuccess] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
 
@@ -19,41 +21,49 @@ export function CustomerSubscriptionPage() {
 
   useEffect(() => {
     let isMounted = true
-    const loadUser = async () => {
+
+    const loadData = async () => {
       if (!tokenStorage.getToken()) return
       try {
-        const apiUser = await authApi.me()
-        if (isMounted) setUser(apiUser)
+        const [apiUser, sub, fetchedPlans] = await Promise.all([
+          authApi.me(),
+          subscriptionApi.getSubscription().catch(() => null),
+          subscriptionApi.getPlans().catch(() => [] as SubscriptionPlan[]),
+        ])
+
+        let planName: 'free' | 'premium' | 'basic' | 'pro' = 'free'
+        if (sub && sub.status === 'active') {
+          const rawPlan = sub.planId.replace('plan-', '')
+          if (rawPlan === 'pro') {
+            planName = 'pro'
+          } else if (rawPlan === 'basic') {
+            planName = userRole === 'customer' ? 'premium' : 'basic'
+          }
+        }
+
+        const userWithSub: User = {
+          ...apiUser,
+          subscription: {
+            plan: planName,
+            status: planName === 'free' ? 'inactive' : 'active',
+            expiresAt: sub?.expiresAt ? sub.expiresAt.split('T')[0] : undefined,
+          },
+        }
+
+        if (isMounted) {
+          setUser(userWithSub)
+          setDemoUser(userWithSub)
+          setPlans(fetchedPlans)
+        }
       } catch {
         if (isMounted) setUser(getDemoUser())
       }
     }
-    void loadUser()
-    return () => {
-      isMounted = false
-    }
+
+    void loadData()
+    return () => { isMounted = false }
   }, [])
 
-  // ==========================================
-  // TEST SUBSCRIPTION ACQUISITION (SIMULATION)
-  // ==========================================
-  // NOTE: This is currently a simulated frontend-only subscription upgrade.
-  // In a production environment, you should replace this client-side state change with a real backend integration:
-  //
-  // 1. Define an API endpoint (e.g. `POST /api/subscriptions/upgrade`) on Cebola Backend.
-  // 2. Call the endpoint passing the selected tier:
-  //    await apiClient.post('/subscriptions/upgrade', { plan })
-  // 3. If integrating a payment gateway (e.g., Stripe):
-  //    - The backend should generate a Stripe Checkout Session URL and return it.
-  //    - Redirect the user to Stripe: `window.location.href = response.stripeCheckoutUrl`.
-  //    - Use Stripe Webhooks on the backend to listen for `checkout.session.completed` and activate the subscription in database.
-  // 4. If using test/demo mode:
-  //    - Directly execute an API request that updates the user's `subscription` column in the database and returns the updated `User` object.
-  // 5. In React, update the state with the fresh user data:
-  //    `const updatedUser = await authApi.upgradePlan({ plan }); setUser(updatedUser);`
-  // ==========================================
-  // REAL API INTEGRATION WITH FAST-TRACK FALLBACKS (TO BE REMOVED)
-  // ==========================================
   const handleUpgrade = async (plan: 'premium' | 'basic' | 'pro') => {
     if (!tokenStorage.getToken()) {
       navigate('/login/sign-in')
@@ -63,13 +73,7 @@ export function CustomerSubscriptionPage() {
 
     setIsSubmitting(true)
     try {
-      let planId = 'plan-free'
-      if (plan === 'premium' || plan === 'basic') {
-        planId = 'plan-basic'
-      } else if (plan === 'pro') {
-        planId = 'plan-pro'
-      }
-
+      const planId = plan === 'pro' ? 'plan-pro' : 'plan-basic'
       const sub = await subscriptionApi.subscribe(planId)
 
       const updatedUser: User = {
@@ -85,20 +89,7 @@ export function CustomerSubscriptionPage() {
       setUser(updatedUser)
       setSuccess(true)
     } catch (err) {
-      console.error('Failed to subscribe via API:', err)
-      // @deprecated FAST-TRACK FALLBACK
-      console.warn('[FAST-TRACK] Falling back to subscription simulation. Remove before production.')
-      const updatedUser: User = {
-        ...user,
-        subscription: {
-          plan,
-          status: 'active',
-          expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-        },
-      }
-      setDemoUser(updatedUser)
-      setUser(updatedUser)
-      setSuccess(true)
+      console.error('Failed to subscribe:', err)
     } finally {
       setIsSubmitting(false)
     }
@@ -112,30 +103,22 @@ export function CustomerSubscriptionPage() {
 
       const updatedUser: User = {
         ...user,
-        subscription: {
-          plan: 'free',
-          status: 'inactive',
-        },
+        subscription: { plan: 'free', status: 'inactive' },
       }
 
       setDemoUser(updatedUser)
       setUser(updatedUser)
     } catch (err) {
-      console.error('Failed to cancel subscription via API:', err)
-      // @deprecated FAST-TRACK FALLBACK
-      console.warn('[FAST-TRACK] Falling back to cancel simulation. Remove before production.')
-      const updatedUser: User = {
-        ...user,
-        subscription: {
-          plan: 'free',
-          status: 'inactive',
-        },
-      }
-      setDemoUser(updatedUser)
-      setUser(updatedUser)
+      console.error('Failed to cancel subscription:', err)
     } finally {
       setIsSubmitting(false)
     }
+  }
+
+  // Helper: get price from fetched plans or fall back to hardcoded value
+  const getPlanPrice = (planId: string, fallback: string): string => {
+    const found = plans.find(p => p.id === planId)
+    return found ? `€${found.price.toFixed(2)}` : fallback
   }
 
   if (success) {
@@ -202,7 +185,7 @@ export function CustomerSubscriptionPage() {
                 )}
               </div>
               <div className="mt-4 flex items-baseline">
-                <span className="text-3xl font-bold tracking-tight text-ink">€9.99</span>
+                <span className="text-3xl font-bold tracking-tight text-ink">{getPlanPrice('plan-basic', '€9.99')}</span>
                 <span className="ml-1 text-sm font-medium text-ink/65">/mo</span>
               </div>
               <div className="mt-6 border-t border-ink/10 pt-6">
@@ -261,7 +244,7 @@ export function CustomerSubscriptionPage() {
                 )}
               </div>
               <div className="mt-4 flex items-baseline">
-                <span className="text-3xl font-bold tracking-tight text-ink">€29.99</span>
+                <span className="text-3xl font-bold tracking-tight text-ink">{getPlanPrice('plan-pro', '€29.99')}</span>
                 <span className="ml-1 text-sm font-medium text-ink/65">/mo</span>
               </div>
               <div className="mt-6 border-t border-ink/10 pt-6">
@@ -360,7 +343,7 @@ export function CustomerSubscriptionPage() {
                 )}
               </div>
               <div className="mt-4 flex items-baseline">
-                <span className="text-4xl font-bold tracking-tight text-ink">€9.99</span>
+                <span className="text-4xl font-bold tracking-tight text-ink">{getPlanPrice('plan-basic', '€9.99')}</span>
                 <span className="ml-1 text-sm font-medium text-ink/65">/mo</span>
               </div>
               <p className="mt-3 text-xs text-ink/50">{t('customer.pages.subscription.adDescription')}</p>
