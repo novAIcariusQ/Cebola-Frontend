@@ -174,9 +174,9 @@ export function MerchantLandingPage() {
             to={`/merchant/shops/${shop.id}`}
             className="rounded-md border border-ink/10 bg-white p-4 shadow-soft transition hover:border-market"
           >
-            <div className="mb-4 grid h-28 place-items-center overflow-hidden rounded-md bg-paper">
+            <div className="mb-4 overflow-hidden rounded-md bg-paper h-40">
               {shop.logoUrl ? (
-                <img className="h-full w-full object-cover" src={shop.logoUrl} alt="" />
+                <img className="h-full w-full object-cover object-center" src={shop.logoUrl} alt="" />
               ) : (
                 <span className="text-3xl font-semibold text-ink/25">{shop.name.slice(0, 1).toUpperCase()}</span>
               )}

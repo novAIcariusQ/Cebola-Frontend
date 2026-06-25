@@ -61,6 +61,8 @@ export const pt = {
         title: 'Encontre lojas locais e encomende o que está disponível agora.',
         description: 'Pesquise lojas ativas, abra o catálogo da loja e compre produtos disponíveis sem criar conta.',
         search: 'Pesquisar lojas',
+        freshArrivals: 'Novas Chegadas',
+        recentReviews: 'O Que Dizem os Vizinhos',
       },
       catalogue: {
         eyebrow: 'Catálogo da loja',

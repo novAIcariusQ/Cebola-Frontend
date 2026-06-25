@@ -61,6 +61,8 @@ export const en = {
         title: 'Find local shops and order what is available now.',
         description: 'Search active shops, open a shop catalogue, and buy available products without creating an account.',
         search: 'Search shops',
+        freshArrivals: 'Fresh Arrivals',
+        recentReviews: 'What Neighbors Say',
       },
       catalogue: {
         eyebrow: 'Shop catalogue',
