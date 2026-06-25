@@ -210,7 +210,7 @@ export function CustomerProductCataloguePage() {
               ))}
             </div>
             <span className="text-sm font-semibold text-ink">
-              {averageRating.toFixed(1)}
+              {(averageRating || 0).toFixed(1)}
             </span>
             <span className="text-xs text-ink/65">
               ({reviewCount} {reviewCount === 1 ? t('customer.pages.ratings.reviewCount') : t('customer.pages.ratings.reviewCountPlural')})

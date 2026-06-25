@@ -16,17 +16,25 @@ export interface RatingsResponse {
   count: number
 }
 
+function normalizeRatingsResponse(data: any): RatingsResponse {
+  return {
+    items: data?.items || [],
+    averageRating: data?.avgRating ?? data?.averageRating ?? 0,
+    count: data?.ratingCount ?? data?.total ?? data?.count ?? 0,
+  }
+}
+
 export const ratingApi = {
   getShopRatings: async (
     shopId: string,
     page = 1,
     limit = 10
   ): Promise<RatingsResponse> => {
-    const { data } = await apiClient.get<RatingsResponse>(
+    const { data } = await apiClient.get<any>(
       `/shops/${shopId}/ratings`,
       { params: { page, limit } }
     )
-    return data
+    return normalizeRatingsResponse(data)
   },
 
   submitRating: async (
@@ -50,10 +58,10 @@ export const ratingApi = {
     page = 1,
     limit = 10
   ): Promise<RatingsResponse> => {
-    const { data } = await apiClient.get<RatingsResponse>(
+    const { data } = await apiClient.get<any>(
       `/merchant/shops/${shopId}/ratings`,
       { params: { page, limit } }
     )
-    return data
+    return normalizeRatingsResponse(data)
   },
 }

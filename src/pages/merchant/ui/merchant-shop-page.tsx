@@ -285,7 +285,7 @@ export function MerchantShopPage() {
                   {t('merchant.pages.shopRatings.averageRating')}
                 </span>
                 <div className="flex items-center gap-2 mt-1">
-                  <span className="text-2xl font-bold text-ink">{averageRating.toFixed(1)}</span>
+                  <span className="text-2xl font-bold text-ink">{(averageRating || 0).toFixed(1)}</span>
                   <div className="flex text-amber-500">
                     {[1, 2, 3, 4, 5].map((star) => (
                       <Star
