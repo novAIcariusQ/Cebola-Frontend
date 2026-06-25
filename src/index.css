@@ -3,8 +3,10 @@
 @tailwind utilities;
 
 :root {
-  color: #17211d;
-  background: #f7f5ef;
+  color-scheme: light;
+  color: #1a1a1a;
+  background: #f6f5f1;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -26,4 +28,76 @@ select {
 
 #root {
   min-height: 100vh;
+}
+
+@layer components {
+  /* Editorial display headings — Instrument Serif */
+  .display {
+    font-family: 'Instrument Serif', Georgia, serif;
+    font-weight: 400;
+    letter-spacing: -0.02em;
+    line-height: 1;
+  }
+
+  /* Marker highlight — лаймовый маркер под текстом */
+  .marker {
+    background: linear-gradient(180deg, transparent 60%, #b3ff42 60%);
+    padding: 0 4px;
+  }
+
+  /* Sticker — карточка с тонкой границей и плоской тенью */
+  .sticker {
+    background: linear-gradient(180deg, #ffffff 0%, #fafaf7 100%);
+    border: 1px solid #ececea;
+    border-radius: 20px;
+  }
+
+  /* Pill — современный pill-навигатор */
+  .pill {
+    background: #ffffff;
+    border: 1px solid #ececea;
+    box-shadow: 0 1px 0 rgba(10, 10, 10, 0.04);
+  }
+
+  /* Paper-grain текстура */
+  .grain {
+    background-image:
+      radial-gradient(rgba(0, 0, 0, 0.025) 1px, transparent 1px),
+      radial-gradient(rgba(0, 0, 0, 0.018) 1px, transparent 1px);
+    background-size: 3px 3px, 7px 7px;
+    background-position: 0 0, 1px 2px;
+  }
+
+  /* Кнопки — pill-shape */
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 rounded-full bg-base px-5 py-3 text-sm font-semibold text-white transition hover:bg-ink;
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center justify-center gap-2 rounded-full border border-line bg-white px-5 py-3 text-sm font-semibold text-ink transition hover:border-base;
+  }
+
+  .btn-ghost {
+    @apply inline-flex items-center justify-center gap-2 rounded-full px-3 py-1.5 text-sm font-medium text-ink transition hover:bg-muted;
+  }
+
+  .btn-icon {
+    @apply inline-flex items-center justify-center rounded-full text-ink transition hover:bg-muted;
+  }
+
+  /* Чипы-фильтры */
+  .chip {
+    @apply inline-flex items-center gap-1.5 rounded-full border border-line bg-white px-3.5 py-1.5 text-sm font-medium text-ink transition hover:border-base;
+  }
+
+  .chip-active {
+    @apply inline-flex items-center gap-1.5 rounded-full bg-base px-3.5 py-1.5 text-sm font-semibold text-white;
+  }
+}
+
+/* Плавный фокус */
+*:focus-visible {
+  outline: 2px solid #1a1a1a;
+  outline-offset: 2px;
+  border-radius: 6px;
 }

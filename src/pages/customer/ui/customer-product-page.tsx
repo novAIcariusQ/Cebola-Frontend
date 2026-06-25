@@ -59,16 +59,16 @@ export function CustomerProductPage() {
   }
 
   if (isLoading) {
-    return <p className="text-sm text-ink/60">{t('common.loading')}</p>
+    return <p className="text-sm text-sub">{t('common.loading')}</p>
   }
 
   if (!product) {
     return (
-      <section className="rounded-md border border-ink/10 bg-white p-6 shadow-soft">
-        <h1 className="text-2xl font-semibold text-ink">{t('customer.pages.product.notFound')}</h1>
+      <section className="sticker p-8">
+        <h1 className="display text-4xl text-ink">{t('customer.pages.product.notFound')}</h1>
         <Link
           to={`/shops/${shopId}/products`}
-          className="mt-4 inline-flex items-center gap-2 rounded-md bg-market px-4 py-2 text-sm font-semibold text-white"
+          className="mt-5 btn-primary"
         >
           <ArrowLeft size={16} aria-hidden="true" />
           {t('common.back')}
@@ -78,61 +78,65 @@ export function CustomerProductPage() {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
       <Link
         to={`/shops/${shopId}/products`}
-        className="inline-flex items-center gap-2 text-sm font-semibold text-ink/60 transition hover:text-market"
+        className="inline-flex items-center gap-1 text-sm font-medium text-sub hover:text-ink"
       >
-        <ArrowLeft size={16} aria-hidden="true" />
-        {t('common.back')}
+        ← {t('common.back')}
       </Link>
 
       <div className="grid gap-6 lg:grid-cols-[420px_1fr]">
-        <section className="rounded-md border border-ink/10 bg-white p-6 shadow-soft">
-          <div className="grid min-h-96 place-items-center overflow-hidden rounded-md bg-paper">
-            {product.photoUrl ? (
-              <img className="h-full max-h-96 w-full object-contain" src={product.photoUrl} alt="" />
-            ) : (
-              <span className="text-7xl font-semibold text-ink/20">{product.title.slice(0, 1).toUpperCase()}</span>
-            )}
-          </div>
+        {/* Poster image */}
+        <section className="relative aspect-[3/4] overflow-hidden rounded-3xl bg-muted">
+          {product.photoUrl ? (
+            <img className="h-full w-full object-cover" src={product.photoUrl} alt="" />
+          ) : (
+            <div className="grid h-full place-items-center">
+              <span className="display text-9xl text-ink/15">{product.title.slice(0, 1).toUpperCase()}</span>
+            </div>
+          )}
         </section>
 
-        <section className="rounded-md border border-ink/10 bg-white p-6 shadow-soft">
-          <p className="text-sm font-semibold text-market">{product.shopTitle}</p>
-          <h1 className="mt-3 text-3xl font-semibold text-ink">{product.title}</h1>
-          <p className="mt-4 text-2xl font-semibold text-market">{formatCurrency(product.price)}</p>
-          <p className="mt-2 text-sm text-ink/55">
-            {t('customer.pages.product.available')}: {product.quantity}
+        {/* Info */}
+        <section className="flex flex-col">
+          <p className="text-sm font-medium text-sub">{product.shopTitle}</p>
+          <h1 className="display mt-2 text-5xl text-ink">{product.title}</h1>
+
+          <div className="mt-6 flex items-baseline gap-3">
+            <span className="display text-5xl text-base">{formatCurrency(product.price)}</span>
+            <span className="text-sm text-sub">/ unidade</span>
+          </div>
+
+          <p className="mt-2 text-sm text-sub">
+            {t('customer.pages.product.available')}: <strong className="font-semibold text-ink">{product.quantity}</strong>
           </p>
 
           <div className="mt-8 flex flex-wrap gap-3">
-            <button
-              type="button"
-              className="inline-flex items-center gap-2 rounded-md border border-ink/10 px-4 py-2 text-sm font-semibold text-ink transition hover:border-market hover:text-market"
-              onClick={addToBasket}
-            >
+            <button type="button" className="btn-secondary" onClick={addToBasket}>
               <ShoppingBasket size={16} aria-hidden="true" />
               {t('customer.basket.add')}
             </button>
-            <button
-              type="button"
-              className="inline-flex items-center gap-2 rounded-md bg-market px-4 py-2 text-sm font-semibold text-white transition hover:bg-market/90"
-              onClick={buyNow}
-            >
+            <button type="button" className="btn-primary" onClick={buyNow}>
               <Zap size={16} aria-hidden="true" />
               {t('customer.pages.product.buy')}
             </button>
           </div>
 
-          {message && <p className="mt-4 text-sm text-market">{message}</p>}
+          {message && (
+            <div className="mt-4 inline-flex w-fit items-center rounded-full bg-lime-100 px-4 py-2 text-sm text-base">
+              ✓ {message}
+            </div>
+          )}
+
+          <section className="mt-10 rounded-3xl border border-line bg-white p-6">
+            <h2 className="font-mono text-xs uppercase tracking-wider text-sub">
+              {t('customer.pages.product.description')}
+            </h2>
+            <p className="mt-3 max-w-3xl text-base leading-7 text-ink/80">{product.description}</p>
+          </section>
         </section>
       </div>
-
-      <section className="rounded-md border border-ink/10 bg-white p-6 shadow-soft">
-        <h2 className="text-sm font-semibold uppercase text-ink/45">{t('customer.pages.product.description')}</h2>
-        <p className="mt-3 max-w-3xl text-sm leading-6 text-ink/70">{product.description}</p>
-      </section>
     </div>
   )
 }

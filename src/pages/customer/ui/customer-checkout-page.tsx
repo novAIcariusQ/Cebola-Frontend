@@ -59,63 +59,91 @@ export function CustomerCheckoutPage() {
   }, [basketItems, t])
 
   return (
-    <main className="min-h-screen bg-paper px-4 py-8 text-ink sm:px-6">
-      <section className="mx-auto max-w-xl rounded-md border border-ink/10 bg-white p-6 shadow-soft">
-        <button
-          type="button"
-          className="inline-flex items-center gap-2 text-sm font-semibold text-ink/60 transition hover:text-market"
-          onClick={() => navigate('/basket')}
-        >
-          <ArrowLeft size={16} aria-hidden="true" />
-          {t('common.back')}
-        </button>
+    <main className="min-h-screen bg-muted px-4 py-12 text-ink sm:px-6">
+      <section className="mx-auto grid max-w-5xl gap-0 overflow-hidden rounded-3xl border border-line bg-white shadow-pop md:grid-cols-[1fr_360px]">
+        <div className="p-8 sm:p-10">
+          <button
+            type="button"
+            className="inline-flex items-center gap-1 text-sm font-medium text-sub hover:text-ink"
+            onClick={() => navigate('/basket')}
+          >
+            ← {t('common.back')}
+          </button>
 
-        <div className="mt-6">
-          <p className="text-xs font-semibold uppercase tracking-wide text-market">
+          <p className="mt-6 font-mono text-xs uppercase tracking-wider text-sub">
             {t('customer.pages.checkout.eyebrow')}
           </p>
-          <h1 className="mt-3 text-2xl font-semibold text-ink">{t('customer.pages.checkout.title')}</h1>
-          <p className="mt-2 text-sm leading-6 text-ink/60">{t('customer.pages.checkout.description')}</p>
-        </div>
-
-        <div className="mt-6 rounded-md bg-paper p-4">
-          <div className="flex justify-between gap-4 text-sm text-ink/70">
-            <span>{t('customer.pages.basket.items')}</span>
-            <strong className="text-ink">{basketItems.reduce((count, item) => count + item.quantity, 0)}</strong>
-          </div>
-          <div className="mt-3 flex justify-between gap-4 border-t border-ink/10 pt-3">
-            <span className="font-semibold text-ink">{t('customer.pages.basket.total')}</span>
-            <strong className="text-market">{formatCurrency(total)}</strong>
-          </div>
-        </div>
-
-        {isSubmitting && (
-          <p className="mt-6 inline-flex items-center gap-2 text-sm text-ink/60">
-            <Loader2 className="animate-spin" size={16} aria-hidden="true" />
-            {t('customer.pages.checkout.creating')}
+          <h1 className="display mt-2 text-4xl text-ink sm:text-5xl">
+            {t('customer.pages.checkout.title')}
+          </h1>
+          <p className="mt-3 text-base leading-7 text-sub">
+            {t('customer.pages.checkout.description')}
           </p>
-        )}
 
-        {error && <p className="mt-6 rounded-md border border-clay/20 bg-clay/5 p-3 text-sm text-clay">{error}</p>}
+          <div className="mt-8 rounded-2xl bg-muted p-5">
+            <div className="flex justify-between gap-4 text-sm text-sub">
+              <span>{t('customer.pages.basket.items')}</span>
+              <strong className="font-mono text-ink">
+                {basketItems.reduce((count, item) => count + item.quantity, 0)}
+              </strong>
+            </div>
+            <div className="mt-3 flex justify-between gap-4 border-t border-line pt-3">
+              <span className="font-semibold text-ink">{t('customer.pages.basket.total')}</span>
+              <strong className="display text-3xl text-base">{formatCurrency(total)}</strong>
+            </div>
+          </div>
 
-        {paymentUrl && (
-          <a
-            href={paymentUrl}
-            className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-md bg-market px-4 py-2 text-sm font-semibold text-white transition hover:bg-market/90"
-          >
-            <ExternalLink size={16} aria-hidden="true" />
-            {t('customer.pages.checkout.openPayment')}
-          </a>
-        )}
+          {isSubmitting && (
+            <p className="mt-6 inline-flex items-center gap-2 rounded-full bg-muted px-4 py-2 text-sm text-ink">
+              <Loader2 className="animate-spin" size={14} aria-hidden="true" />
+              {t('customer.pages.checkout.creating')}
+            </p>
+          )}
 
-        {!isSubmitting && !paymentUrl && (
-          <Link
-            to="/basket"
-            className="mt-6 inline-flex w-full items-center justify-center rounded-md border border-ink/10 px-4 py-2 text-sm font-semibold text-ink transition hover:border-market hover:text-market"
-          >
-            {t('customer.navigation.basket')}
-          </Link>
-        )}
+          {error && (
+            <p className="mt-6 rounded-2xl border border-rust/30 bg-rust/5 p-4 text-sm text-rust">{error}</p>
+          )}
+
+          {paymentUrl && (
+            <a href={paymentUrl} className="mt-6 w-full btn-primary">
+              <ExternalLink size={16} aria-hidden="true" />
+              {t('customer.pages.checkout.openPayment')}
+            </a>
+          )}
+
+          {!isSubmitting && !paymentUrl && (
+            <Link to="/basket" className="mt-6 w-full btn-secondary">
+              {t('customer.navigation.basket')}
+            </Link>
+          )}
+        </div>
+
+        <aside className="relative bg-base p-8 text-white sm:p-10">
+          <p className="font-mono text-xs uppercase tracking-widest text-lime-300">
+            {t('customer.pages.checkout.eyebrow')}
+          </p>
+          <h3 className="display mt-4 text-3xl leading-tight text-white">
+            Recolha em loja,<br />sem fila.
+          </h3>
+          <p className="mt-3 text-sm text-white/65">3 passos simples.</p>
+
+          <ul className="mt-8 space-y-3 text-sm">
+            <li className="flex items-center gap-3">
+              <span className="grid h-6 w-6 place-items-center rounded-full bg-lime-300 text-xs font-bold text-base">1</span>
+              Reserva criada
+            </li>
+            <li className="flex items-center gap-3">
+              <span className="grid h-6 w-6 place-items-center rounded-full bg-lime-300 text-xs font-bold text-base">2</span>
+              Recebes QR
+            </li>
+            <li className="flex items-center gap-3">
+              <span className="grid h-6 w-6 place-items-center rounded-full bg-lime-300 text-xs font-bold text-base">3</span>
+              Levantamento
+            </li>
+          </ul>
+
+          <div className="pointer-events-none absolute -bottom-12 -right-12 hidden h-40 w-40 rounded-full bg-lime-300/20 md:block"></div>
+        </aside>
       </section>
     </main>
   )

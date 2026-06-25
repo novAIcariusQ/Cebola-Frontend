@@ -74,120 +74,127 @@ export function LoginForm({ mode = 'sign-in' }: LoginFormProps) {
   }
 
   return (
-    <section className="w-full max-w-md rounded-md border border-ink/10 bg-white p-6 shadow-soft">
-      <div className="mb-6 flex items-start justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-semibold text-ink">
+    <main className="flex min-h-screen items-center justify-center bg-muted px-4 py-10">
+      <section className="w-full max-w-md">
+        <div className="mb-6 flex items-start justify-between gap-4">
+          <a href="/" className="flex items-center gap-2">
+            <span className="grid h-9 w-9 place-items-center rounded-full bg-base font-display text-lg font-bold text-lime-300">
+              C
+            </span>
+            <span className="font-display text-2xl text-ink">Cebola</span>
+          </a>
+          <LanguageSwitcher />
+        </div>
+
+        <div className="sticker grain p-7">
+          <h1 className="display text-4xl text-ink">
             {isRegister ? t('login.signUpTitle') : t('login.signInTitle')}
           </h1>
-          <p className="mt-2 text-sm leading-6 text-ink/65">
+          <p className="mt-2 text-sm leading-6 text-sub">
             {isRegister ? t('login.signUpSubtitle') : t('login.signInSubtitle')}
           </p>
+
+          <div className="mt-6 inline-flex rounded-full bg-muted p-1">
+            <button
+              type="button"
+              className={`rounded-full px-4 py-1.5 text-sm font-semibold transition ${
+                role === 'customer' ? 'bg-base text-white shadow-sm' : 'text-sub hover:text-ink'
+              }`}
+              onClick={() => setRole('customer')}
+            >
+              {t('login.customer')}
+            </button>
+            <button
+              type="button"
+              className={`rounded-full px-4 py-1.5 text-sm font-semibold transition ${
+                role === 'merchant' ? 'bg-base text-white shadow-sm' : 'text-sub hover:text-ink'
+              }`}
+              onClick={() => setRole('merchant')}
+            >
+              {t('login.merchant')}
+            </button>
+          </div>
+
+          <form className="mt-6 space-y-4" onSubmit={submit}>
+            {isRegister && (
+              <label className="block text-sm font-medium text-ink">
+                {t('login.nickname')}
+                <input
+                  className="mt-1 w-full rounded-full border border-line bg-white px-4 py-2.5 outline-none transition focus:border-base"
+                  value={name}
+                  onChange={event => setName(event.target.value)}
+                  required
+                />
+              </label>
+            )}
+            <label className="block text-sm font-medium text-ink">
+              {t('login.email')}
+              <input
+                className="mt-1 w-full rounded-full border border-line bg-white px-4 py-2.5 outline-none transition focus:border-base"
+                type="email"
+                value={email}
+                onChange={event => setEmail(event.target.value)}
+                required
+              />
+            </label>
+            <label className="block text-sm font-medium text-ink">
+              {t('login.password')}
+              <input
+                className="mt-1 w-full rounded-full border border-line bg-white px-4 py-2.5 outline-none transition focus:border-base"
+                type="password"
+                value={password}
+                onChange={event => setPassword(event.target.value)}
+                required
+              />
+            </label>
+            {isRegister && (
+              <label className="block text-sm font-medium text-ink">
+                {t('login.passwordConfirmation')}
+                <input
+                  className="mt-1 w-full rounded-full border border-line bg-white px-4 py-2.5 outline-none transition focus:border-base"
+                  type="password"
+                  value={passwordConfirmation}
+                  onChange={event => setPasswordConfirmation(event.target.value)}
+                  required
+                />
+              </label>
+            )}
+
+            {error && <p className="text-sm text-rust">{error}</p>}
+
+            <button
+              type="submit"
+              className="w-full btn-primary disabled:cursor-wait disabled:opacity-60"
+              disabled={isSubmitting}
+            >
+              {isRegister ? <UserPlus size={16} aria-hidden="true" /> : <LogIn size={16} aria-hidden="true" />}
+              {isRegister ? t('login.createAccount') : t('login.signIn')}
+            </button>
+          </form>
+
+          <div className="mt-5 space-y-2">
+            <button
+              type="button"
+              className="w-full btn-secondary"
+              onClick={() => navigate(isRegister ? '/login/sign-in' : '/login/sign-up')}
+            >
+              {isRegister
+                ? t('login.switchToLogin')
+                : role === 'customer'
+                  ? t('login.createAccount')
+                  : t('login.switchToRegister')}
+            </button>
+            <button
+              type="button"
+              className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-line bg-white px-4 py-2 text-sm text-sub transition hover:border-base hover:text-ink"
+              onClick={useDemoAccess}
+            >
+              <KeyRound size={14} aria-hidden="true" />
+              {t('login.demoToken')}
+            </button>
+          </div>
         </div>
-        <LanguageSwitcher />
-      </div>
-
-      <div className="mb-4 grid grid-cols-2 gap-1 rounded-md bg-ink/5 p-1">
-        <button
-          type="button"
-          className={`rounded py-2 text-sm font-semibold transition ${
-            role === 'customer'
-              ? 'bg-market text-white shadow-sm'
-              : 'text-ink/65 hover:bg-ink/5 hover:text-ink'
-          }`}
-          onClick={() => setRole('customer')}
-        >
-          {t('login.customer')}
-        </button>
-        <button
-          type="button"
-          className={`rounded py-2 text-sm font-semibold transition ${
-            role === 'merchant'
-              ? 'bg-market text-white shadow-sm'
-              : 'text-ink/65 hover:bg-ink/5 hover:text-ink'
-          }`}
-          onClick={() => setRole('merchant')}
-        >
-          {t('login.merchant')}
-        </button>
-      </div>
-
-      <form className="space-y-4" onSubmit={submit}>
-        {isRegister && (
-          <label className="block text-sm font-medium text-ink">
-            {t('login.nickname')}
-            <input
-              className="mt-1 w-full rounded-md border border-ink/15 px-3 py-2 outline-none transition focus:border-market"
-              value={name}
-              onChange={event => setName(event.target.value)}
-              required
-            />
-          </label>
-        )}
-        <label className="block text-sm font-medium text-ink">
-          {t('login.email')}
-          <input
-            className="mt-1 w-full rounded-md border border-ink/15 px-3 py-2 outline-none transition focus:border-market"
-            type="email"
-            value={email}
-            onChange={event => setEmail(event.target.value)}
-            required
-          />
-        </label>
-        <label className="block text-sm font-medium text-ink">
-          {t('login.password')}
-          <input
-            className="mt-1 w-full rounded-md border border-ink/15 px-3 py-2 outline-none transition focus:border-market"
-            type="password"
-            value={password}
-            onChange={event => setPassword(event.target.value)}
-            required
-          />
-        </label>
-        {isRegister && (
-          <label className="block text-sm font-medium text-ink">
-            {t('login.passwordConfirmation')}
-            <input
-              className="mt-1 w-full rounded-md border border-ink/15 px-3 py-2 outline-none transition focus:border-market"
-              type="password"
-              value={passwordConfirmation}
-              onChange={event => setPasswordConfirmation(event.target.value)}
-              required
-            />
-          </label>
-        )}
-        {error && <p className="text-sm text-clay">{error}</p>}
-        <button
-          type="submit"
-          className="inline-flex w-full items-center justify-center gap-2 rounded-md bg-market px-4 py-3 text-sm font-semibold text-white transition hover:bg-market/90 disabled:cursor-wait disabled:opacity-60"
-          disabled={isSubmitting}
-        >
-          {isRegister ? <UserPlus size={18} aria-hidden="true" /> : <LogIn size={18} aria-hidden="true" />}
-          {isRegister ? t('login.createAccount') : t('login.signIn')}
-        </button>
-      </form>
-
-      <div className="mt-4 grid gap-2">
-        <button
-          type="button"
-          className="rounded-md border border-ink/10 px-4 py-2 text-sm font-medium text-market transition hover:border-market"
-          onClick={() => navigate(isRegister ? '/login/sign-in' : '/login/sign-up')}
-        >
-          {isRegister
-            ? t('login.switchToLogin')
-            : role === 'customer'
-              ? t('login.createAccount')
-              : t('login.switchToRegister')}
-        </button>
-        <button
-          type="button"
-          className="inline-flex items-center justify-center gap-2 rounded-md border border-ink/10 px-4 py-2 text-sm text-ink/75 transition hover:border-market hover:text-market"
-          onClick={useDemoAccess}
-        >
-          <KeyRound size={16} aria-hidden="true" />
-          {t('login.demoToken')}
-        </button>
-      </div>
-    </section>
+      </section>
+    </main>
   )
 }
