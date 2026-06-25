@@ -249,9 +249,9 @@ export function CustomerProductCataloguePage() {
             className="rounded-md border border-ink/10 bg-white p-4 shadow-soft transition hover:border-market"
           >
             <Link to={`/shops/${shopId}/products/${product.id}`} className="block">
-              <div className="mb-4 grid aspect-[4/3] place-items-center overflow-hidden rounded-md bg-paper">
+              <div className="mb-4 overflow-hidden rounded-md bg-paper aspect-[4/3]">
                 {product.photoUrl ? (
-                  <img className="h-full w-full object-cover" src={product.photoUrl} alt="" />
+                  <img className="h-full w-full object-cover object-center" src={product.photoUrl} alt="" />
                 ) : (
                   <span className="text-4xl font-semibold text-ink/20">
                     {product.title.slice(0, 1).toUpperCase()}

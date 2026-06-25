@@ -178,9 +178,9 @@ export function CustomerLandingPage() {
             to={`/shops/${shop.id}/products`}
             className="group rounded-md border border-ink/10 bg-white p-4 shadow-soft transition hover:border-market"
           >
-            <div className="mb-4 grid h-40 place-items-center overflow-hidden rounded-md bg-paper">
+            <div className="mb-4 overflow-hidden rounded-md bg-paper h-40">
               {shop.logoUrl ? (
-                <img className="h-full w-full object-contain" src={shop.logoUrl} alt="" />
+                <img className="h-full w-full object-cover object-center" src={shop.logoUrl} alt="" />
               ) : (
                 <Store className="text-ink/25 transition group-hover:text-market" size={36} aria-hidden="true" />
               )}
