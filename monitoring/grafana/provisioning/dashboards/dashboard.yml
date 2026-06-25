@@ -1,0 +1,11 @@
+apiVersion: 1
+
+providers:
+  - name: Cebola
+    orgId: 1
+    folder: Cebola
+    type: file
+    disableDeletion: false
+    editable: true
+    options:
+      path: /var/lib/grafana/dashboards
