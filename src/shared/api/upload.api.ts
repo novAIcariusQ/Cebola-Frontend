@@ -1,4 +1,5 @@
 import { apiClient } from './base'
+import { compressImageForUpload } from '@shared/lib'
 
 type UploadResponse = {
   url: string
@@ -11,9 +12,10 @@ type AiProductResponse = {
 }
 
 export const uploadApi = {
-  uploadImage(file: File) {
+  async uploadImage(file: File) {
+    const prepared = await compressImageForUpload(file)
     const formData = new FormData()
-    formData.append('file', file)
+    formData.append('file', prepared)
 
     return apiClient
       .post<UploadResponse>('/upload', formData, {
@@ -21,9 +23,10 @@ export const uploadApi = {
       })
       .then(response => response.data)
   },
-  describeProduct(file: File) {
+  async describeProduct(file: File) {
+    const prepared = await compressImageForUpload(file)
     const formData = new FormData()
-    formData.append('file', file)
+    formData.append('file', prepared)
 
     return apiClient
       .post<AiProductResponse>('/ai', formData, {

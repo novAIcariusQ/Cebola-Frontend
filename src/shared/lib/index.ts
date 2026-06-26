@@ -1,4 +1,5 @@
 export { formatCurrency } from './formatters'
+export { compressImageForUpload } from './compress-image'
 export {
   CUSTOMER_BASKET_EVENT,
   addCustomerBasketProduct,
