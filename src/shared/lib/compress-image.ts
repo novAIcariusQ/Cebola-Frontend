@@ -1,6 +1,7 @@
 const MAX_DIMENSION = 1600
-const TARGET_MAX_BYTES = 900 * 1024
-const MIN_QUALITY = 0.5
+const TARGET_MAX_BYTES = 750 * 1024
+const COMPRESS_IF_LARGER_THAN = 500 * 1024
+const MIN_QUALITY = 0.4
 const INITIAL_QUALITY = 0.85
 
 function loadImage(file: File): Promise<HTMLImageElement> {
@@ -70,14 +71,14 @@ export async function compressImageForUpload(file: File): Promise<File> {
     return file
   }
 
-  if (file.size <= TARGET_MAX_BYTES) {
+  if (file.size <= COMPRESS_IF_LARGER_THAN) {
     return file
   }
 
   const image = await loadImage(file)
   let maxDimension = MAX_DIMENSION
 
-  while (maxDimension >= 640) {
+  while (maxDimension >= 480) {
     const { width, height } = scaledDimensions(image.naturalWidth, image.naturalHeight, maxDimension)
     const canvas = document.createElement('canvas')
     canvas.width = width
@@ -85,7 +86,7 @@ export async function compressImageForUpload(file: File): Promise<File> {
 
     const context = canvas.getContext('2d')
     if (!context) {
-      return file
+      throw new Error('Failed to prepare image for upload')
     }
 
     context.drawImage(image, 0, 0, width, height)
@@ -95,8 +96,8 @@ export async function compressImageForUpload(file: File): Promise<File> {
       return encoded
     }
 
-    maxDimension = Math.round(maxDimension * 0.75)
+    maxDimension = Math.round(maxDimension * 0.7)
   }
 
-  return file
+  throw new Error('Image is too large to upload after compression')
 }

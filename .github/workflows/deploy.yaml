@@ -61,6 +61,17 @@ jobs:
           strip_components: 1
           overwrite: true
 
+      - name: Upload nginx upload limit
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          source: deploy/nginx/cebola-client-max-body.conf
+          target: /etc/nginx/conf.d/cebola-client-max-body.conf
+          overwrite: true
+
       - name: Reload nginx
         uses: appleboy/ssh-action@v1.2.0
         with:
