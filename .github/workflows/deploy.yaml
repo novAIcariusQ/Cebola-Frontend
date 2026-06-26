@@ -69,7 +69,7 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: ${{ secrets.SSH_PORT }}
           source: deploy/nginx/cebola-client-max-body.conf
-          target: /etc/nginx/conf.d/cebola-client-max-body.conf
+          target: /tmp
           overwrite: true
 
       - name: Reload nginx
@@ -79,4 +79,7 @@ jobs:
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: ${{ secrets.SSH_PORT }}
-          script: nginx -t && systemctl reload nginx
+          script: |
+            rm -rf /etc/nginx/conf.d/cebola-client-max-body.conf
+            mv /tmp/cebola-client-max-body.conf /etc/nginx/conf.d/cebola-client-max-body.conf
+            nginx -t && systemctl reload nginx
