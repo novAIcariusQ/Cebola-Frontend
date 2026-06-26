@@ -3,7 +3,7 @@ import { KeyRound, LogIn, UserPlus } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 import { authApi } from '@shared/api'
-import { tokenStorage } from '@shared/lib/token-storage'
+import { setDemoUser, tokenStorage } from '@shared/lib'
 import { LanguageSwitcher } from '@widgets/language-switcher'
 
 type LoginFormProps = {
@@ -14,6 +14,7 @@ export function LoginForm({ mode = 'sign-in' }: LoginFormProps) {
   const { t } = useTranslation()
   const navigate = useNavigate()
   const isRegister = mode === 'sign-up'
+  const [role, setRole] = useState<'customer' | 'merchant'>('customer')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [passwordConfirmation, setPasswordConfirmation] = useState('')
@@ -38,7 +39,13 @@ export function LoginForm({ mode = 'sign-in' }: LoginFormProps) {
         : await authApi.login({ email, password })
 
       tokenStorage.setToken(response.token)
-      navigate('/merchant/shops')
+      tokenStorage.setUserRole(role)
+      setDemoUser(response.user)
+      if (role === 'merchant') {
+        navigate('/merchant/shops')
+      } else {
+        navigate('/')
+      }
     } catch {
       setError(t('common.error'))
     } finally {
@@ -48,7 +55,22 @@ export function LoginForm({ mode = 'sign-in' }: LoginFormProps) {
 
   const useDemoAccess = () => {
     tokenStorage.setToken('local-demo-token')
-    navigate('/merchant/shops')
+    tokenStorage.setUserRole(role)
+    if (role === 'customer') {
+      setDemoUser({
+        id: 'local-demo-user',
+        email: 'customer@example.com',
+        name: 'Customer User',
+      })
+      navigate('/')
+    } else {
+      setDemoUser({
+        id: 'local-demo-user',
+        email: 'merchant@example.com',
+        name: 'Merchant User',
+      })
+      navigate('/merchant/shops')
+    }
   }
 
   return (
@@ -65,10 +87,35 @@ export function LoginForm({ mode = 'sign-in' }: LoginFormProps) {
         <LanguageSwitcher />
       </div>
 
+      <div className="mb-4 grid grid-cols-2 gap-1 rounded-md bg-ink/5 p-1">
+        <button
+          type="button"
+          className={`rounded py-2 text-sm font-semibold transition ${
+            role === 'customer'
+              ? 'bg-market text-white shadow-sm'
+              : 'text-ink/65 hover:bg-ink/5 hover:text-ink'
+          }`}
+          onClick={() => setRole('customer')}
+        >
+          {t('login.customer')}
+        </button>
+        <button
+          type="button"
+          className={`rounded py-2 text-sm font-semibold transition ${
+            role === 'merchant'
+              ? 'bg-market text-white shadow-sm'
+              : 'text-ink/65 hover:bg-ink/5 hover:text-ink'
+          }`}
+          onClick={() => setRole('merchant')}
+        >
+          {t('login.merchant')}
+        </button>
+      </div>
+
       <form className="space-y-4" onSubmit={submit}>
         {isRegister && (
           <label className="block text-sm font-medium text-ink">
-            {t('login.name')}
+            {t('login.nickname')}
             <input
               className="mt-1 w-full rounded-md border border-ink/15 px-3 py-2 outline-none transition focus:border-market"
               value={name}
@@ -126,7 +173,11 @@ export function LoginForm({ mode = 'sign-in' }: LoginFormProps) {
           className="rounded-md border border-ink/10 px-4 py-2 text-sm font-medium text-market transition hover:border-market"
           onClick={() => navigate(isRegister ? '/login/sign-in' : '/login/sign-up')}
         >
-          {isRegister ? t('login.switchToLogin') : t('login.switchToRegister')}
+          {isRegister
+            ? t('login.switchToLogin')
+            : role === 'customer'
+              ? t('login.createAccount')
+              : t('login.switchToRegister')}
         </button>
         <button
           type="button"

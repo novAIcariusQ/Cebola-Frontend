@@ -82,7 +82,7 @@ export function MerchantProductPage() {
       price: nextProduct.price,
       quantity: nextProduct.quantity,
       photoUrl: nextProduct.photoUrl ?? '',
-      isAvailable: nextProduct.quantity > 0 && nextProduct.isAvailable,
+      isAvailable: nextProduct.quantity > 0,
     }
 
     const normalizedProduct = { ...nextProduct, isAvailable: payload.isAvailable }
@@ -92,13 +92,14 @@ export function MerchantProductPage() {
       setProduct(savedProduct)
       setDraftProduct(savedProduct)
       upsertDemoMerchantProduct(savedProduct)
+      setMessage(t('merchant.products.saved'))
     } catch {
       setProduct(normalizedProduct)
       setDraftProduct(normalizedProduct)
       upsertDemoMerchantProduct(normalizedProduct)
+      setMessage(t('common.error'))
     } finally {
       setEditingField(null)
-      setMessage(t('merchant.products.saved'))
       setIsSaving(false)
     }
   }

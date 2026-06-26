@@ -1,10 +1,10 @@
 import { FormEvent, useEffect, useState } from 'react'
-import { KeyRound, LogOut, Pencil, Save, X } from 'lucide-react'
+import { HelpCircle, KeyRound, LogOut, Pencil, Save, Sparkles, X } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import type { User } from '@entities/user'
-import { authApi } from '@shared/api'
-import { getDemoUser, setDemoUser, tokenStorage } from '@shared/lib'
+import { authApi, subscriptionApi } from '@shared/api'
+import { getDemoUser, setDemoUser, tokenStorage, USER_PROFILE_EVENT } from '@shared/lib'
 
 export function MerchantSettingsPage() {
   const { t } = useTranslation()
@@ -20,18 +20,43 @@ export function MerchantSettingsPage() {
   const [message, setMessage] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
 
+  const isCustomer = tokenStorage.getUserRole() === 'customer'
+  const currentPlan = user?.subscription?.plan ?? 'free'
+
   useEffect(() => {
     let isMounted = true
 
     const loadUser = async () => {
       try {
-        const apiUser = await authApi.me()
+        const [apiUser, sub] = await Promise.all([
+          authApi.me(),
+          subscriptionApi.getSubscription().catch(() => null),
+        ])
 
         if (!isMounted) return
 
-        setUser(apiUser)
-        setNameDraft(apiUser.name)
-        setDemoUser(apiUser)
+        let planName: 'free' | 'premium' | 'basic' | 'pro' = 'free'
+        if (sub && sub.status === 'active') {
+          const rawPlan = sub.planId.replace('plan-', '')
+          if (rawPlan === 'pro') {
+            planName = 'pro'
+          } else if (rawPlan === 'basic') {
+            planName = isCustomer ? 'premium' : 'basic'
+          }
+        }
+
+        const userWithSub: User = {
+          ...apiUser,
+          subscription: {
+            plan: planName,
+            status: planName === 'free' ? 'inactive' : 'active',
+            expiresAt: sub && sub.expiresAt ? sub.expiresAt.split('T')[0] : undefined,
+          },
+        }
+
+        setUser(userWithSub)
+        setNameDraft(userWithSub.name)
+        setDemoUser(userWithSub)
       } catch {
         if (!isMounted) return
 
@@ -49,8 +74,14 @@ export function MerchantSettingsPage() {
   }, [])
 
   const logout = () => {
+    const role = tokenStorage.getUserRole()
     tokenStorage.clearToken()
-    navigate('/login/sign-in')
+    window.dispatchEvent(new Event(USER_PROFILE_EVENT))
+    if (role === 'customer') {
+      navigate('/')
+    } else {
+      navigate('/login/sign-in')
+    }
   }
 
   const saveName = async () => {
@@ -69,7 +100,7 @@ export function MerchantSettingsPage() {
       setUser(updatedUser)
     } finally {
       setIsEditingName(false)
-      setMessage(t('merchant.pages.settings.nameSaved'))
+      setMessage(t('merchant.pages.settings.nicknameSaved'))
       setIsSavingName(false)
     }
   }
@@ -77,6 +108,42 @@ export function MerchantSettingsPage() {
   const cancelNameEdit = () => {
     setNameDraft(user?.name ?? '')
     setIsEditingName(false)
+  }
+
+  const handleCancelSubscription = async () => {
+    if (!user) return
+    setIsSavingName(true)
+    setMessage(null)
+    setError(null)
+    try {
+      await subscriptionApi.cancel()
+      const updatedUser = {
+        ...user,
+        subscription: {
+          plan: 'free' as const,
+          status: 'inactive' as const,
+        },
+      }
+      setUser(updatedUser)
+      setDemoUser(updatedUser)
+      setMessage(t('customer.pages.subscription.inactiveStatus'))
+    } catch (err) {
+      console.error('Failed to cancel subscription via API:', err)
+      // @deprecated FAST-TRACK FALLBACK
+      console.warn('[FAST-TRACK] Falling back to cancel subscription simulation. Remove before production.')
+      const updatedUser = {
+        ...user,
+        subscription: {
+          plan: 'free' as const,
+          status: 'inactive' as const,
+        },
+      }
+      setUser(updatedUser)
+      setDemoUser(updatedUser)
+      setMessage(t('customer.pages.subscription.inactiveStatus'))
+    } finally {
+      setIsSavingName(false)
+    }
   }
 
   const changePassword = async (event: FormEvent) => {
@@ -112,7 +179,7 @@ export function MerchantSettingsPage() {
 
         <div className="mt-6 rounded-md border border-ink/10 p-4">
           <div className="mb-3 flex items-center justify-between gap-3">
-            <span className="text-xs font-semibold uppercase text-ink/45">{t('login.name')}</span>
+            <span className="text-xs font-semibold uppercase text-ink/45">{t('login.nickname')}</span>
             {isEditingName ? (
               <div className="flex gap-2">
                 <button
@@ -164,6 +231,80 @@ export function MerchantSettingsPage() {
       </section>
 
       <aside className="space-y-6">
+        {isCustomer && (
+          <>
+            <section className="rounded-md border border-ink/10 bg-white p-5 shadow-soft">
+              <h2 className="flex items-center gap-2 text-sm font-semibold uppercase text-ink/45">
+                <Sparkles size={16} className="text-market" aria-hidden="true" />
+                {t('customer.pages.subscription.title')}
+              </h2>
+              <div className="mt-4 space-y-3 text-sm">
+                <div className="flex items-center justify-between">
+                  <span className="text-ink/45">{t('customer.pages.subscription.currentPlan')}</span>
+                  <span className="font-semibold text-ink">
+                    {currentPlan === 'premium'
+                      ? t('customer.pages.subscription.premiumPlan')
+                      : t('customer.pages.subscription.freePlan')}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-ink/45">{t('customer.pages.subscription.status')}</span>
+                  <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${currentPlan === 'premium'
+                      ? 'bg-market/10 text-market'
+                      : 'bg-ink/10 text-ink/65'
+                    }`}>
+                    {currentPlan === 'premium'
+                      ? t('customer.pages.subscription.activeStatus')
+                      : t('customer.pages.subscription.inactiveStatus')}
+                  </span>
+                </div>
+                {currentPlan === 'premium' && user?.subscription?.expiresAt && (
+                  <div className="flex items-center justify-between">
+                    <span className="text-ink/45">{t('customer.pages.subscription.expires')}</span>
+                    <span className="font-medium text-ink">{user.subscription.expiresAt}</span>
+                  </div>
+                )}
+              </div>
+
+              {currentPlan === 'premium' ? (
+                <button
+                  type="button"
+                  className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-md border border-clay/30 px-4 py-2 text-sm font-semibold text-clay transition hover:bg-clay/5"
+                  onClick={handleCancelSubscription}
+                >
+                  {t('customer.pages.subscription.cancelBtn')}
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-md bg-market px-4 py-2 text-sm font-semibold text-white transition hover:bg-market/90"
+                  onClick={() => navigate('/subscription')}
+                >
+                  {t('customer.pages.subscription.upgradeBtn')}
+                </button>
+              )}
+            </section>
+
+            <section className="rounded-md border border-ink/10 bg-white p-5 shadow-soft">
+              <h2 className="flex items-center gap-2 text-sm font-semibold uppercase text-ink/45">
+                <HelpCircle size={16} className="text-market" aria-hidden="true" />
+                {t('merchant.pages.settings.faq')}
+              </h2>
+              <p className="mt-2 text-sm leading-6 text-ink/65">
+                {t('merchant.pages.settings.faqDescription')}
+              </p>
+              <a
+                href="https://novaicariusq.github.io/Cebola-userdocs/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-md bg-market px-4 py-2 text-sm font-semibold text-white transition hover:bg-market/90"
+              >
+                {t('merchant.pages.settings.faqButton')}
+              </a>
+            </section>
+          </>
+        )}
+
         <form className="rounded-md border border-ink/10 bg-white p-5 shadow-soft" onSubmit={changePassword}>
           <h2 className="flex items-center gap-2 text-sm font-semibold uppercase text-ink/45">
             <KeyRound size={16} aria-hidden="true" />

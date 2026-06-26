@@ -1,4 +1,4 @@
-# Cebola Frontend
+# Cebola Frontend 
 
 React/Vite frontend for the Cebola MVP. The current implementation covers the public customer storefront and the merchant-facing flow from the project board: customer shop search, product catalogue/detail, basket, checkout redirect, merchant auth, merchant shop/product/order management, settings, upload hooks, AI describe hooks, and EN/PT localization.
 

@@ -19,6 +19,9 @@ type CustomerShopDto = Partial<CustomerShop> & {
   is_active?: boolean
   is_avalible?: boolean
   is_available?: boolean
+  owner_id?: string
+  avg_rating?: number
+  rating_count?: number
 }
 
 type CustomerProductDto = Partial<CustomerProduct> & {
@@ -69,7 +72,10 @@ export function normalizeCustomerShop(shop: CustomerShopDto): CustomerShop {
     title: shop.title ?? shop.name ?? '',
     description: shop.description ?? '',
     logoUrl: shop.logoUrl ?? shop.logo_url ?? shop.logo ?? null,
-    isAvailable: shop.isAvailable ?? shop.is_available ?? shop.is_avalible ?? shop.is_active ?? true,
+    isAvailable: shop.isAvailable ?? shop.is_active ?? true,
+    ownerId: shop.ownerId ?? shop.owner_id ?? '',
+    avgRating: shop.avgRating ?? shop.avg_rating ?? undefined,
+    ratingCount: shop.ratingCount ?? shop.rating_count ?? undefined,
   }
 }
 

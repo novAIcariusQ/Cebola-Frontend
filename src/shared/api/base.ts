@@ -9,11 +9,20 @@ export const apiClient = axios.create({
   },
 })
 
+function buildAuthorizationHeader(token: string) {
+  const normalized = token.trim().replace(/^Bearer\s+/i, '')
+  return normalized ? `Bearer ${normalized}` : null
+}
+
 apiClient.interceptors.request.use(config => {
   const token = tokenStorage.getToken()
 
   if (token) {
-    config.headers.Authorization = `Bearer ${token}`
+    const authorization = buildAuthorizationHeader(token)
+
+    if (authorization) {
+      config.headers.Authorization = authorization
+    }
   }
 
   return config

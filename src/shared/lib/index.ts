@@ -1,4 +1,5 @@
 export { formatCurrency } from './formatters'
+export { compressImageForUpload } from './compress-image'
 export {
   CUSTOMER_BASKET_EVENT,
   addCustomerBasketProduct,
@@ -41,4 +42,4 @@ export {
   upsertDemoMerchantOrder,
 } from './merchant-order-demo-storage'
 export { tokenStorage } from './token-storage'
-export { fallbackUser, getDemoUser, setDemoUser } from './user-demo-storage'
+export { fallbackUser, getDemoUser, setDemoUser, USER_PROFILE_EVENT } from './user-demo-storage'
